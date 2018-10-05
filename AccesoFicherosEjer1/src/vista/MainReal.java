@@ -5,11 +5,13 @@
  */
 package vista;
 
-import Logica.MisExcepciones;
+import Logica.MisExceptions;
 import Logica.OperacionesFicheros;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,25 +23,25 @@ public class MainReal {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-   String ruta = null;
-   boolean ordenPorNombre=true;
-   boolean soloDirectorios=true;
-   
-        try {
-         
-            System.out.println("Introduzca la ruta");
-            ruta = LeerDesdeTeclado.leerString();
-            List<File> archivo = new ArrayList();
+        String ruta = null;
+        boolean ordenPorNombre = true;
+        boolean soloDirectorios = true;
 
-            archivo = OperacionesFicheros.listarFicheros(ruta, true, true);
-
-            for (File file1 : archivo) {
-                System.out.println(file1.getName());
-            }
-
-        } catch (MisExcepciones.NoEsDirectorioNoSePuedeListar ex) {
-            System.out.println("No se encuentra la ruta");
+        List<File> archivo = new ArrayList();
+        while (true) {
+            try {
+                System.out.println("Introduzca la ruta");
+                ruta = LeerDesdeTeclado.leerString();
+                archivo = OperacionesFicheros.listarFicheros(ruta, true, true);
+                for (File file1 : archivo) {
+                    System.out.println(file1.getName());
+                }
+            } catch (MisExceptions.RutaNoValida ex) {
+               continue;
+            } 
+            break;
         }
+
     }
 
 }
