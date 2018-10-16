@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Clase para el manejo de directorios
+ *
  * @author Daniel Regueiro
  */
 public class OperacionesFicheros {
@@ -53,7 +54,9 @@ public class OperacionesFicheros {
     }
 
     /**
-     *metodo que usa internamente el metodo listarFicheros para ordenar por tamaño
+     * metodo que usa internamente el metodo listarFicheros para ordenar por
+     * tamaño
+     *
      * @param lista
      * @return devuelve la lista ordenada por tamaño
      */
@@ -63,7 +66,9 @@ public class OperacionesFicheros {
     }
 
     /**
-     *metodo usado internamente por el metodo listarFicheros para ordenar por nombre
+     * metodo usado internamente por el metodo listarFicheros para ordenar por
+     * nombre
+     *
      * @param lista
      * @return una lista ordenada por nombre
      */
@@ -126,8 +131,8 @@ public class OperacionesFicheros {
      * @return true si lo cambia, false si no lo hace
      * @throws MisExceptions.RutaNoValida
      */
-    public boolean cambiarExtensionFicheros(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
-    return cambiarExtensionFicheros(new File(ruta), extensionAntigua, extensionNueva);
+    public boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+        return cambiarExtensionFichero(new File(ruta), extensionAntigua, extensionNueva);
     }
 
     /**
@@ -138,14 +143,16 @@ public class OperacionesFicheros {
      * @return true si ha podido cambiarlo y false si no
      * @throws MisExceptions.RutaNoValida
      */
-    public boolean cambiarExtensionFicheros(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
-       
-        if(!ruta.exists()){throw new MisExceptions.RutaNoValida();}
-        if (ruta.getName().endsWith(extensionAntigua)) {
-            ruta.getName().replace(extensionAntigua, extensionNueva);
-             return true;
+    public boolean cambiarExtensionFichero(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+
+        if (!ruta.exists()) {
+            throw new MisExceptions.RutaNoValida();
         }
-       return false;
+        if (ruta.getName().endsWith(extensionAntigua)) {
+            ruta.getName().replace(extensionAntigua, extensionNueva);       
+            return true;
+        }
+        return false;
     }
 
 }
