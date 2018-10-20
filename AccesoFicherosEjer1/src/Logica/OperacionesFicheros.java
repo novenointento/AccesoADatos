@@ -6,6 +6,8 @@
 package Logica;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
  */
 public class OperacionesFicheros {
 
+    //Ejercocio 1
     /**
      *
      * @param ruta meto la ruta que quiero filtrar, me falta hacer que busque en
@@ -35,6 +38,7 @@ public class OperacionesFicheros {
         if (!directorio.exists()) {
             throw new MisExceptions.RutaNoValida("la Ruta no existe");
         }
+        
         File[] arrayFicheros = directorio.listFiles(); //creo un array de files para guardar todos los file que tenga un directorio
 
         List<File> listaFicheros = Arrays.asList(arrayFicheros); //paso el array de files a una coleccion para ordenarla
@@ -81,29 +85,13 @@ public class OperacionesFicheros {
 
     /**
      *
-     * @param lista
-     * @return
-     */
-    public static List<File> listarSoloDirectorios(List<File> lista) {
-        List<File> directorios = new ArrayList<File>();
-        for (File file : lista) {
-            if (file.isFile()) {
-                directorios.add(file);
-            }
-        }
-
-        return directorios;
-    }
-
-    /**
-     *
      * @param rutaOrigen ruta donde queremos crear la lista de directorios
      * @param listaDirectorios list con los directorios a crear
      * @return int numero de directorios creados
      * @throws MisExceptions.RutaYaExiste
      * @throws MisExceptions.RutaNoValida
      */
-    public int crearDirectorios(File rutaOrigen, ArrayList<String> listaDirectorios) throws MisExceptions.RutaYaExiste, MisExceptions.RutaNoValida {
+    public static int crearDirectorios(File rutaOrigen, ArrayList<String> listaDirectorios) throws MisExceptions.RutaYaExiste, MisExceptions.RutaNoValida {
         int numero = 0;
 
         if (!rutaOrigen.exists()) {
@@ -131,7 +119,7 @@ public class OperacionesFicheros {
      * @return true si lo cambia, false si no lo hace
      * @throws MisExceptions.RutaNoValida
      */
-    public boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+    public static boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
         return cambiarExtensionFichero(new File(ruta), extensionAntigua, extensionNueva);
     }
 
@@ -143,16 +131,43 @@ public class OperacionesFicheros {
      * @return true si ha podido cambiarlo y false si no
      * @throws MisExceptions.RutaNoValida
      */
-    public boolean cambiarExtensionFichero(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+    public static boolean cambiarExtensionFichero(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
 
         if (!ruta.exists()) {
             throw new MisExceptions.RutaNoValida();
         }
         if (ruta.getName().endsWith(extensionAntigua)) {
-            ruta.getName().replace(extensionAntigua, extensionNueva);       
+            ruta.getName().replace(extensionAntigua, extensionNueva);
             return true;
         }
         return false;
     }
 
+    /**
+     *
+     * @param lista
+     * @return
+     */
+    public static List<File> listarSoloDirectorios(List<File> lista) {
+        List<File> directorios = new ArrayList<File>();
+        for (File file : lista) {
+            if (file.isFile()) {
+                directorios.add(file);
+            }
+        }
+        return directorios;
+    }
+
+    //ejercicio 2
+    public static void listarFicherosRecursivo(File directorio) throws MisExceptions.RutaNoValida {
+
+        File[] listaDirectorios = directorio.listFiles();
+        for (int x = 0; x < listaDirectorios.length; x++) {
+            System.out.println(listaDirectorios[x].getName());
+            if (listaDirectorios[x].isDirectory()) {
+                listarFicherosRecursivo(listaDirectorios[x]);
+            }
+        }
+
+    }
 }

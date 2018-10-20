@@ -5,17 +5,19 @@
  */
 package Logica;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import static java.util.Arrays.stream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 /**
  *
@@ -23,8 +25,48 @@ import java.util.logging.Logger;
  */
 public class OperacionesStream {
 
-    FileInputStream in = null;
-    FileOutputStream out = null;
+    private FileInputStream in = null;
+    private FileOutputStream out = null;
+//ejercicio 3
+
+    public static String leerDeFile(File archivo) throws FileNotFoundException, UnsupportedEncodingException, IOException {
+
+        InputStreamReader in = new InputStreamReader(new FileInputStream(archivo), "UTF-8");
+        BufferedReader br = new BufferedReader(in);
+        String texto = "";
+        String linea = "";
+        while ((linea = br.readLine()) != null) {
+            texto = texto.concat(linea + "\n");
+        }
+        br.close();
+        return texto;
+    }
+
+    public static Map<String, Integer> listarPalabras(String texto) {
+        TreeMap<String, Integer> coleccion = new TreeMap<String, Integer>();
+        texto = limpiadorTextos(texto);
+        StringTokenizer troceador = new StringTokenizer(texto);
+
+        while (troceador.hasMoreTokens()) {
+            String palabra = troceador.nextToken().trim().toLowerCase();
+            if (coleccion.containsKey(palabra)) {
+                coleccion.replace(palabra, coleccion.get(palabra) + 1);
+            } else {
+                coleccion.put(palabra, 1);
+            }
+
+        }
+
+        return coleccion;
+    }
+
+    public static String limpiadorTextos(String sucio) {
+        String[] mierdas = {",", ".", ";", ":", "-", "¡", "¿", "'", "\""};
+        for (String mierda : mierdas) {
+            sucio.replace(mierda, " ");
+        }
+        return sucio;
+    }
 
     public void codificadorTxt(File archivoCodificar, File archivoCodificado, String finaliza, int codificacion) throws FileNotFoundException, IOException {
 
@@ -35,10 +77,8 @@ public class OperacionesStream {
                 int c;
 
                 while ((c = in.read()) != -1) {
-
                     out.write(c + codificacion);
                 }
-
             } finally {
                 if (in != null) {
                     in.close();
@@ -46,11 +86,8 @@ public class OperacionesStream {
                 if (out != null) {
                     out.close();
                 }
-
             }
-
         }
-
     }
 
     public void descodificadorTxt(File archivoCodificar, File archivoCodificado, String finaliza, int codificacion) throws IOException {
@@ -60,13 +97,13 @@ public class OperacionesStream {
 
     }
 
-    public HashMap contadorLetras(File archivo, String finaliza) throws FileNotFoundException, IOException {
+    public static Map contadorLetras(File archivo, String finaliza) throws FileNotFoundException, IOException {
         int k = 0;
         int v = 1;
-        HashMap coleccion = new HashMap(k, v);
+        Map coleccion = new HashMap(k, v);
+        InputStreamReader in = new InputStreamReader(new FileInputStream(archivo), "UTF-8");
         if (archivo.exists() && archivo.getName().endsWith(finaliza)) {
             try {
-                in = new FileInputStream(archivo);
                 int c;
                 while ((c = in.read()) != -1) {
                     if (coleccion.containsKey(c)) {
@@ -90,13 +127,11 @@ public class OperacionesStream {
     public void imprimirLetrasCodificadas(File archivo, String finaliza) throws IOException {
         int k = 0;
         int v = 1;
-        HashMap coleccion = new HashMap(k, v);
-
+        Map coleccion = new HashMap(k, v);
         coleccion = this.contadorLetras(archivo, finaliza);
         Iterator<Map.Entry<Integer, Integer>> it = coleccion.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, Integer> e = it.next();
-
             System.out.println(((char) (int) e.getKey()) + " " + e.getValue());
         }
 
