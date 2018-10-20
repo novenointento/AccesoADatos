@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -21,13 +21,13 @@ import java.util.TreeMap;
 
 /**
  *
- * @author gnord
+ * @author daniel
  */
 public class OperacionesStream {
 
     private FileInputStream in = null;
     private FileOutputStream out = null;
-//ejercicio 3
+
 
     public static String leerDeFile(File archivo) throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
