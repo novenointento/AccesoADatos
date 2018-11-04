@@ -83,7 +83,9 @@ public class OperacionesStream {
     }
 
     /**
-     *metodo que lista el numero de palabras diferentes que aperece en un texto y las veces que se repite cada una
+     * metodo que lista el numero de palabras diferentes que aperece en un texto
+     * y las veces que se repite cada una
+     *
      * @param texto que queremos contar
      * @return map con las palabras y las veces que se repite
      */
@@ -106,7 +108,9 @@ public class OperacionesStream {
     }
 
     /**
-     *metodo para quitar de un texto simbolos que no pertenezcan a palabras, para despues usar en el silabador o separador por palabras
+     * metodo para quitar de un texto simbolos que no pertenezcan a palabras,
+     * para despues usar en el silabador o separador por palabras
+     *
      * @param textoSucio con los simbolos que no queremos
      * @return string con el texto sin los simbolos
      */
@@ -119,7 +123,9 @@ public class OperacionesStream {
     }
 
     /**
-     *metodo que codifica un archivo pasandole como parametro un numero para codificar
+     * metodo que codifica un archivo pasandole como parametro un numero para
+     * codificar
+     *
      * @param archivoCodificar
      * @param archivoCodificado
      * @param finaliza
@@ -127,8 +133,17 @@ public class OperacionesStream {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void codificadorTxt(File archivoCodificar, int codificacion) throws FileNotFoundException, IOException {
-File archivoCodificado=new File(archivoCodificar.getCanonicalPath());
+    public void codificadorTxt(File archivoCodificar, String contasenya, boolean decodificar) throws FileNotFoundException, IOException {
+        String rutaOriginal;
+        rutaOriginal=archivoCodificar.getAbsolutePath();
+        int codificacion = 0;
+        for (int i = 0; i < contasenya.length(); i++) {
+            codificacion = codificacion + contasenya.charAt(i);
+        }
+        if (decodificar) {
+            codificacion = codificacion * -1;
+        }
+        File archivoCodificado = new File(archivoCodificar.getParent() + "/codificado " + archivoCodificar.getName());
         if (archivoCodificar.exists()) {
             try {
                 in = new FileInputStream(archivoCodificar);
@@ -141,26 +156,26 @@ File archivoCodificado=new File(archivoCodificar.getCanonicalPath());
             } finally {
                 if (in != null) {
                     in.close();
+                 
                 }
                 if (out != null) {
                     out.close();
                 }
             }
         }
+        archivoCodificar.delete();
+        archivoCodificado.renameTo(new File(rutaOriginal));
+        
+        
     }
 
-    public void descodificadorTxt(File archivoCodificar, File archivoCodificado, String finaliza, int codificacion) throws IOException {
-
-        codificacion = codificacion * -1;
-        codificadorTxt(archivoCodificar, codificacion);
-
-    }
 
     /**
      *
-     * @param archivo tipo texto 
+     * @param archivo tipo texto
      * @param finaliza
-     * @return coleccion map de letras y veces que se repite en el texto que le metimos por parametro
+     * @return coleccion map de letras y veces que se repite en el texto que le
+     * metimos por parametro
      * @throws FileNotFoundException
      * @throws IOException
      */

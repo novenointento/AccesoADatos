@@ -23,6 +23,7 @@ import javax.swing.table.TableRowSorter;
 import logica.ChartsCreator;
 import logica.ControladorLimpiador;
 import logica.OperacionesFicheros;
+import logica.OperacionesStream;
 import logica.TableModelFile;
 import logica.VisualizadorPagina;
 
@@ -41,7 +42,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private File pagina;
     private VisualizadorPagina visualizador;
     private TableModelFile tableModel;
-
+private OperacionesStream operacionesStream=new OperacionesStream();
     private enum TAMANO {
         BYTE("60 Bytes", 60), MEGAS("500 Megas", 5*1024*1024), GIGAS("5 Gigas", 5*1024*1024*1024);
         private final String nombre;
@@ -134,6 +135,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jButtonSeleccionar = new javax.swing.JButton();
         jCheckBoxDirectorios = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jButtonUnidades = new javax.swing.JButton();
         comboUnidades = new javax.swing.JComboBox<>();
@@ -144,6 +146,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButtonEliminarBorrables = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        jButtonCodificar = new javax.swing.JButton();
+        jButtonDecodificar = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -163,8 +168,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jTable1.setToolTipText("Selecciona archivos de esta lista para trabajar con ellos");
         jScrollPane2.setViewportView(jTable1);
 
-        jButtonEliminar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButtonEliminar.setText("ELIMINAR SELECCION");
+        jButtonEliminar.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jButtonEliminar.setText("Eliminar seleccion");
         jButtonEliminar.setToolTipText("Elimina los archivos que tengamos seleccionados.");
         jButtonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -172,7 +177,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jButtonCambiarExtension.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButtonCambiarExtension.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButtonCambiarExtension.setText("Cambiar Extension");
         jButtonCambiarExtension.setToolTipText("Selecciona un archivo de la lista para eliminarlo");
         jButtonCambiarExtension.addActionListener(new java.awt.event.ActionListener() {
@@ -183,9 +188,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         textoUnidad.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
 
-        jComboTipoArchivo.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jComboTipoArchivo.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
 
-        jButtonCopiaSeguridad.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButtonCopiaSeguridad.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButtonCopiaSeguridad.setText("Copia de Seguridad");
         jButtonCopiaSeguridad.setToolTipText("Hace una copia de seguridad de todos los archivos de la lista");
         jButtonCopiaSeguridad.addActionListener(new java.awt.event.ActionListener() {
@@ -194,11 +199,11 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        comboUnidadesCopiaSeguridad.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        comboUnidadesCopiaSeguridad.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         comboUnidadesCopiaSeguridad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jButtonSeleccionar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButtonSeleccionar.setText("BUSCAR");
+        jButtonSeleccionar.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jButtonSeleccionar.setText("Buscar");
         jButtonSeleccionar.setToolTipText("Busca en un directorio y todos sus inferiores.");
         jButtonSeleccionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -206,11 +211,15 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        jCheckBoxDirectorios.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jCheckBoxDirectorios.setText("Buscar solo directorios");
         jCheckBoxDirectorios.setToolTipText("Seleccionalo para que la lista solo muestre carpetas");
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel3.setText("Unidad para la copia:");
+
+        jLabel4.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jLabel4.setText("Cambia extensiones de archivo:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -226,16 +235,21 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                     .addComponent(jScrollPane2)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxDirectorios)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(140, 140, 140)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboTipoArchivo, 0, 176, Short.MAX_VALUE)
-                            .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(58, 58, 58)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBoxDirectorios)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(140, 140, 140)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jComboTipoArchivo, 0, 176, Short.MAX_VALUE)
+                                    .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(58, 58, 58))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(48, 48, 48)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(comboUnidadesCopiaSeguridad, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -258,7 +272,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-                .addComponent(jLabel3)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -293,10 +309,10 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        comboUnidades.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        comboUnidades.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         comboUnidades.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel1.setText("Unidades:");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -308,10 +324,13 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButtonUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addComponent(comboUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -328,24 +347,24 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jComboBTamano.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jComboBTamano.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jComboBTamano.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBTamanoItemStateChanged(evt);
             }
         });
 
-        comboExtensionesBorrables.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        comboExtensionesBorrables.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         comboExtensionesBorrables.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 comboExtensionesBorrablesItemStateChanged(evt);
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel2.setText("Seleccion borrables:");
 
-        jButtonEliminarBorrables.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButtonEliminarBorrables.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButtonEliminarBorrables.setText("Eliminar Borrables");
         jButtonEliminarBorrables.setToolTipText("Elimina archivos de más tamaño o cuya estension sea la seleccionada.");
         jButtonEliminarBorrables.addActionListener(new java.awt.event.ActionListener() {
@@ -368,13 +387,12 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jButtonEliminarBorrables)
-                                .addGap(86, 86, 86))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(62, 62, 62))))))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(62, 62, 62))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonEliminarBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(83, 83, 83))
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboExtensionesBorrables, jComboBTamano});
@@ -395,15 +413,51 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        jButtonCodificar.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jButtonCodificar.setText("Codificar");
+        jButtonCodificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCodificarActionPerformed(evt);
+            }
+        });
+
+        jButtonDecodificar.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jButtonDecodificar.setText("Decodificar");
+        jButtonDecodificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDecodificarActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jLabel5.setText("Encripta archivos:");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 295, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap(73, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButtonDecodificar, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonCodificar, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(61, 61, 61))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(76, 76, 76))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addComponent(jButtonCodificar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButtonDecodificar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -548,6 +602,35 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         this.rellenarTable();
     }//GEN-LAST:event_jButtonEliminarBorrablesActionPerformed
 
+    private void jButtonCodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCodificarActionPerformed
+
+        int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
+        if (seleccionado >= 0) {
+           File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+           try {
+               operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"),false);
+           } catch (IOException ex) {
+               Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+           } 
+        }
+        ControladorLimpiador.getInstance().reiniciarBusqueda();
+        this.rellenarTable();
+    }//GEN-LAST:event_jButtonCodificarActionPerformed
+
+    private void jButtonDecodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDecodificarActionPerformed
+        int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
+        if (seleccionado >= 0) {
+           File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+           try {
+               operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"),true);
+           } catch (IOException ex) {
+               Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+           } 
+        }
+        ControladorLimpiador.getInstance().reiniciarBusqueda();
+        this.rellenarTable();
+    }//GEN-LAST:event_jButtonDecodificarActionPerformed
+
     public void datosSelector() {
         selectorJfileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         selectorJfileChooser.setCurrentDirectory(new File("d:/"));
@@ -600,7 +683,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboUnidades;
     private javax.swing.JComboBox<String> comboUnidadesCopiaSeguridad;
     private javax.swing.JButton jButtonCambiarExtension;
+    private javax.swing.JButton jButtonCodificar;
     private javax.swing.JButton jButtonCopiaSeguridad;
+    private javax.swing.JButton jButtonDecodificar;
     private javax.swing.JButton jButtonEliminar;
     private javax.swing.JButton jButtonEliminarBorrables;
     private javax.swing.JButton jButtonSeleccionar;
@@ -611,6 +696,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
