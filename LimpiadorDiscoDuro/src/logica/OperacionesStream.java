@@ -127,9 +127,9 @@ public class OperacionesStream {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void codificadorTxt(File archivoCodificar, File archivoCodificado, String finaliza, int codificacion) throws FileNotFoundException, IOException {
-
-        if (archivoCodificar.exists() && archivoCodificar.getName().endsWith(finaliza)) {
+    public void codificadorTxt(File archivoCodificar, int codificacion) throws FileNotFoundException, IOException {
+File archivoCodificado=new File(archivoCodificar.getCanonicalPath());
+        if (archivoCodificar.exists()) {
             try {
                 in = new FileInputStream(archivoCodificar);
                 out = new FileOutputStream(archivoCodificado);
@@ -152,7 +152,7 @@ public class OperacionesStream {
     public void descodificadorTxt(File archivoCodificar, File archivoCodificado, String finaliza, int codificacion) throws IOException {
 
         codificacion = codificacion * -1;
-        codificadorTxt(archivoCodificar, archivoCodificado, finaliza, codificacion);
+        codificadorTxt(archivoCodificar, codificacion);
 
     }
 
