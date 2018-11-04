@@ -6,6 +6,7 @@
 package logica;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
@@ -14,18 +15,19 @@ import javax.swing.table.AbstractTableModel;
  * @author daniel regueiro
  */
 public class TableModelFile extends AbstractTableModel {
-private long tamanoBorrable;
-private String extensionBorrable;
+
+    private long tamanoBorrable;
+    private String extensionBorrable;
     private final List<File> listaFiles;
+    private List<File> listaFilesBorrables;
     private final String[] columnas = {"Nombre", "Tamaño", "Ruta", "Contenido", "Antiguedad", "Borrable"};
 
     public TableModelFile(long tamanoBorrable, String extensionBorrable, List<File> listaFiles) {
         this.tamanoBorrable = tamanoBorrable;
         this.extensionBorrable = extensionBorrable;
         this.listaFiles = listaFiles;
+        this.listaFilesBorrables = new ArrayList<>();
     }
-
-  
 
     @Override
     public int getRowCount() {
@@ -62,22 +64,27 @@ private String extensionBorrable;
                 return OperacionesFicheros.fechaCreacionArchivo(listaFiles.get(filas));
             case 5:
                 boolean borrable = false;
-                if (listaFiles.get(filas).isDirectory() && listaFiles.get(filas).list().length == 0){
+                if (listaFiles.get(filas).isDirectory() && listaFiles.get(filas).list().length == 0) {
                     borrable = true;
                 }
-                if (listaFiles.get(filas).isFile() &&listaFiles.get(filas).length()>tamanoBorrable){
+                if (listaFiles.get(filas).isFile() && listaFiles.get(filas).length() > tamanoBorrable) {
                     borrable = true;
                 }
                 if (listaFiles.get(filas).getName().endsWith(extensionBorrable)) {
                     borrable = true;
                 }
-                if (borrable){
+                if (borrable) {
+                    this.listaFilesBorrables.add(listaFiles.get(filas));
                     return "Si";
                 } else {
                     return "No";
                 }
         }
         return null;
+    }
+    
+    public List<File> getListaBorrables(){
+        return this.listaFilesBorrables;
     }
 
 }

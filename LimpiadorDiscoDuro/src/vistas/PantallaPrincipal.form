@@ -51,8 +51,7 @@
                               <Component id="textoUnidad" alignment="0" min="-2" pref="284" max="-2" attributes="0"/>
                               <Component id="jButtonSeleccionar" alignment="0" min="-2" pref="176" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jCheckBoxOrdenarNombre" min="-2" pref="162" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="190" max="-2" attributes="0"/>
                                   <Component id="jCheckBoxDirectorios" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -77,6 +76,8 @@
                               <Component id="jButtonCopiaSeguridad" pref="147" max="32767" attributes="0"/>
                               <Component id="comboUnidadesCopiaSeguridad" max="32767" attributes="0"/>
                           </Group>
+                          <EmptySpace min="-2" pref="76" max="-2" attributes="0"/>
+                          <Component id="jButtonEliminarBorrables" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace pref="46" max="32767" attributes="0"/>
@@ -89,10 +90,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jCheckBoxOrdenarNombre" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jCheckBoxDirectorios" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="jCheckBoxDirectorios" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
@@ -132,6 +130,7 @@
                       <Component id="jButtonCopiaSeguridad" alignment="3" min="-2" pref="52" max="-2" attributes="0"/>
                       <Component id="jButtonCambiarExtension" alignment="3" min="-2" pref="52" max="-2" attributes="0"/>
                       <Component id="jButtonEliminar" alignment="3" min="-2" pref="52" max="-2" attributes="0"/>
+                      <Component id="jButtonEliminarBorrables" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="207" max="32767" attributes="0"/>
               </Group>
@@ -173,12 +172,6 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Buscar solo directorios"/>
             <Property name="toolTipText" type="java.lang.String" value="Seleccionalo para que la lista solo muestre carpetas"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBoxOrdenarNombre">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Ordenar por nombre"/>
-            <Property name="toolTipText" type="java.lang.String" value="Seleccionalo antes de buscar si quieres que ordene por nombre el resultado de la busqueda"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonEliminar">
@@ -288,6 +281,14 @@
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonEliminarBorrables">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Eliminar Borrables"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonEliminarBorrablesActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

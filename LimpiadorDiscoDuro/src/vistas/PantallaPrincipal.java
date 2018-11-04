@@ -7,7 +7,6 @@ package vistas;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.table.TableRowSorter;
 import logica.ChartsCreator;
 import logica.ControladorLimpiador;
 import logica.OperacionesFicheros;
@@ -59,15 +59,16 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         public long getCantidad() {
             return cantidad;
         }
-        public static TAMANO getEnum(String nombre){
-            if(nombre.equalsIgnoreCase(MEGA.nombre)){
-            return MEGA;
-            }else if(nombre.equalsIgnoreCase(MEGAS.nombre)){
-            return MEGAS;
-            }else if(nombre.equalsIgnoreCase(GIGAS.nombre)){
-            return GIGAS;
+
+        public static TAMANO getEnum(String nombre) {
+            if (nombre.equalsIgnoreCase(MEGA.nombre)) {
+                return MEGA;
+            } else if (nombre.equalsIgnoreCase(MEGAS.nombre)) {
+                return MEGAS;
+            } else if (nombre.equalsIgnoreCase(GIGAS.nombre)) {
+                return GIGAS;
             }
-        return null;
+            return null;
         }
     };
 
@@ -126,7 +127,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jButtonSeleccionar = new javax.swing.JButton();
         jCheckBoxDirectorios = new javax.swing.JCheckBox();
-        jCheckBoxOrdenarNombre = new javax.swing.JCheckBox();
         jButtonEliminar = new javax.swing.JButton();
         jButtonCambiarExtension = new javax.swing.JButton();
         textoUnidad = new javax.swing.JLabel();
@@ -137,6 +137,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jButtonCopiaSeguridad = new javax.swing.JButton();
         comboUnidadesCopiaSeguridad = new javax.swing.JComboBox<>();
         comboExtensionesBorrables = new javax.swing.JComboBox<>();
+        jButtonEliminarBorrables = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -163,9 +164,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jCheckBoxDirectorios.setText("Buscar solo directorios");
         jCheckBoxDirectorios.setToolTipText("Seleccionalo para que la lista solo muestre carpetas");
-
-        jCheckBoxOrdenarNombre.setText("Ordenar por nombre");
-        jCheckBoxOrdenarNombre.setToolTipText("Seleccionalo antes de buscar si quieres que ordene por nombre el resultado de la busqueda");
 
         jButtonEliminar.setText("Eliminar");
         jButtonEliminar.setToolTipText("Selecciona un archivo de la lista para eliminarlo");
@@ -216,6 +214,13 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        jButtonEliminarBorrables.setText("Eliminar Borrables");
+        jButtonEliminarBorrables.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEliminarBorrablesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -229,8 +234,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                             .addComponent(textoUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jCheckBoxOrdenarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(28, 28, 28)
+                                .addGap(190, 190, 190)
                                 .addComponent(jCheckBoxDirectorios)))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -248,7 +252,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButtonCopiaSeguridad, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                            .addComponent(comboUnidadesCopiaSeguridad, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(comboUnidadesCopiaSeguridad, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(76, 76, 76)
+                        .addComponent(jButtonEliminarBorrables)))
                 .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -257,9 +263,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(54, 54, 54)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jCheckBoxOrdenarNombre)
-                            .addComponent(jCheckBoxDirectorios)))
+                        .addComponent(jCheckBoxDirectorios))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addComponent(comboUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -289,7 +293,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonCopiaSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonEliminarBorrables))
                 .addContainerGap(207, Short.MAX_VALUE))
         );
 
@@ -324,15 +329,16 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonSeleccionarActionPerformed
 
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
-        int seleccionado = jTable1.getSelectedRow();
-        if (seleccionado >= 0) {
-            File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
-            archivo.delete();
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-            this.rellenarTable();
+        int seleccionadosTabla[] = jTable1.getSelectedRows();
+        if (seleccionadosTabla.length > 0) {
+            for (int seleccionadoTabla : seleccionadosTabla) {
+                int seleccionadoLista = jTable1.convertRowIndexToModel(seleccionadoTabla);
+                File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionadoLista);
+                archivo.delete();
+            }
         }
-
-
+        ControladorLimpiador.getInstance().reiniciarBusqueda();
+        this.rellenarTable();
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
     private void jButtonUnidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUnidadesActionPerformed
@@ -364,7 +370,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonUnidadesActionPerformed
 
     private void jButtonCambiarExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCambiarExtensionActionPerformed
-        int seleccionado = jTable1.getSelectedRow();
+        int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
         if (seleccionado >= 0) {
             File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
             String ruta = archivo.getAbsolutePath();
@@ -413,6 +419,14 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_comboExtensionesBorrablesItemStateChanged
 
+    private void jButtonEliminarBorrablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarBorrablesActionPerformed
+        for (File fileABorrar : tableModel.getListaBorrables()) {
+            fileABorrar.delete();
+        }
+        ControladorLimpiador.getInstance().reiniciarBusqueda();
+        this.rellenarTable();
+    }//GEN-LAST:event_jButtonEliminarBorrablesActionPerformed
+
     public void datosSelector() {
         selectorJfileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         selectorJfileChooser.setCurrentDirectory(new File("d:/"));
@@ -423,14 +437,12 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }
 
     public void rellenarTable() {
-    long tamanoMaximo=  TAMANO.valueOf(TAMANO.getEnum(jComboBTamano.getSelectedItem().toString()).toString()).getCantidad();
-     
-        tableModel = new TableModelFile(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), ControladorLimpiador.getInstance().ordenarFiles(ControladorLimpiador.getInstance().SeleccionarFilesRecursivamente(), jCheckBoxOrdenarNombre.isSelected(), jCheckBoxDirectorios.isSelected()));
-    
+        long tamanoMaximo = TAMANO.valueOf(TAMANO.getEnum(jComboBTamano.getSelectedItem().toString()).toString()).getCantidad();
+        tableModel = new TableModelFile(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), ControladorLimpiador.getInstance().ordenarFiles(ControladorLimpiador.getInstance().SeleccionarFilesRecursivamente(), false, jCheckBoxDirectorios.isSelected()));
         jTable1.setModel(tableModel);
-
+        TableRowSorter<TableModelFile> sorter = new TableRowSorter<>(tableModel);
+        jTable1.setRowSorter(sorter);
     }
-    
 
     /**
      * @param args the command line arguments
@@ -476,10 +488,10 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCambiarExtension;
     private javax.swing.JButton jButtonCopiaSeguridad;
     private javax.swing.JButton jButtonEliminar;
+    private javax.swing.JButton jButtonEliminarBorrables;
     private javax.swing.JButton jButtonSeleccionar;
     private javax.swing.JButton jButtonUnidades;
     private javax.swing.JCheckBox jCheckBoxDirectorios;
-    private javax.swing.JCheckBox jCheckBoxOrdenarNombre;
     private javax.swing.JComboBox<String> jComboBTamano;
     private javax.swing.JComboBox<String> jComboTipoArchivo;
     private javax.swing.JPanel jPanel1;
