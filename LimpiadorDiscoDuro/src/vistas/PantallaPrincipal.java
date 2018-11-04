@@ -42,9 +42,10 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private File pagina;
     private VisualizadorPagina visualizador;
     private TableModelFile tableModel;
-private OperacionesStream operacionesStream=new OperacionesStream();
+    private OperacionesStream operacionesStream = new OperacionesStream();
+
     private enum TAMANO {
-        BYTE("60 Bytes", 60), MEGAS("500 Megas", 5*1024*1024), GIGAS("5 Gigas", 5*1024*1024*1024);
+        BYTE("60 Bytes", 60), MEGAS("500 Megas", 5 * 1024 * 1024), GIGAS("5 Gigas", 5 * 1024 * 1024 * 1024);
         private final String nombre;
         private final long cantidad;
 
@@ -169,7 +170,8 @@ private OperacionesStream operacionesStream=new OperacionesStream();
         jScrollPane2.setViewportView(jTable1);
 
         jButtonEliminar.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jButtonEliminar.setText("Eliminar seleccion");
+        jButtonEliminar.setForeground(new java.awt.Color(204, 0, 0));
+        jButtonEliminar.setText("Eliminar selección");
         jButtonEliminar.setToolTipText("Elimina los archivos que tengamos seleccionados.");
         jButtonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -178,7 +180,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
         });
 
         jButtonCambiarExtension.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jButtonCambiarExtension.setText("Cambiar Extension");
+        jButtonCambiarExtension.setText("Cambiar Extensión");
         jButtonCambiarExtension.setToolTipText("Selecciona un archivo de la lista para eliminarlo");
         jButtonCambiarExtension.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -202,7 +204,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
         comboUnidadesCopiaSeguridad.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         comboUnidadesCopiaSeguridad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jButtonSeleccionar.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jButtonSeleccionar.setFont(new java.awt.Font("Dialog", 2, 36)); // NOI18N
         jButtonSeleccionar.setText("Buscar");
         jButtonSeleccionar.setToolTipText("Busca en un directorio y todos sus inferiores.");
         jButtonSeleccionar.addActionListener(new java.awt.event.ActionListener() {
@@ -234,20 +236,20 @@ private OperacionesStream operacionesStream=new OperacionesStream();
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane2)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jCheckBoxDirectorios)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(140, 140, 140)
+                                .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(33, 33, 33)
+                                .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(59, 59, 59)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jComboTipoArchivo, 0, 176, Short.MAX_VALUE)
                                     .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(58, 58, 58))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(39, 39, 39)
+                                .addComponent(jCheckBoxDirectorios)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel4)
                                 .addGap(48, 48, 48)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -261,20 +263,18 @@ private OperacionesStream operacionesStream=new OperacionesStream();
                                 .addGap(14, 14, 14)))))
                 .addGap(272, 272, 272))
         );
-
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButtonCopiaSeguridad, jButtonSeleccionar});
-
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(textoUnidad)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jCheckBoxDirectorios))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -284,20 +284,16 @@ private OperacionesStream operacionesStream=new OperacionesStream();
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButtonCopiaSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(22, 22, 22))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jCheckBoxDirectorios)
-                        .addGap(5, 5, 5)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26))))
+                        .addGap(22, 22, 22))
+                    .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(26, 26, 26))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {comboUnidadesCopiaSeguridad, jComboTipoArchivo});
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButtonCambiarExtension, jButtonCopiaSeguridad, jButtonEliminar, jButtonSeleccionar});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButtonCambiarExtension, jButtonCopiaSeguridad, jButtonEliminar});
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -337,7 +333,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(comboUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
@@ -362,9 +358,10 @@ private OperacionesStream operacionesStream=new OperacionesStream();
         });
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jLabel2.setText("Seleccion borrables:");
+        jLabel2.setText("Selección borrables:");
 
         jButtonEliminarBorrables.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jButtonEliminarBorrables.setForeground(new java.awt.Color(204, 0, 0));
         jButtonEliminarBorrables.setText("Eliminar Borrables");
         jButtonEliminarBorrables.setToolTipText("Elimina archivos de más tamaño o cuya estension sea la seleccionada.");
         jButtonEliminarBorrables.addActionListener(new java.awt.event.ActionListener() {
@@ -378,21 +375,20 @@ private OperacionesStream operacionesStream=new OperacionesStream();
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jComboBTamano, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addComponent(comboExtensionesBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(62, 62, 62))))
+                .addGap(12, 12, 12)
+                .addComponent(jComboBTamano, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(comboExtensionesBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonEliminarBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(83, 83, 83))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jButtonEliminarBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(85, 85, 85))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39))))
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboExtensionesBorrables, jComboBTamano});
@@ -400,21 +396,22 @@ private OperacionesStream operacionesStream=new OperacionesStream();
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
-                .addGap(35, 35, 35)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboExtensionesBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBTamano, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
+                    .addComponent(jComboBTamano, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboExtensionesBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
                 .addComponent(jButtonEliminarBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(37, 37, 37))
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jButtonCodificar.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jButtonCodificar.setText("Codificar");
+        jButtonCodificar.setToolTipText("codifica un archivo para que no sea legible al abrirlo");
         jButtonCodificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCodificarActionPerformed(evt);
@@ -423,6 +420,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
 
         jButtonDecodificar.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jButtonDecodificar.setText("Decodificar");
+        jButtonDecodificar.setToolTipText("Devuelve el archivo a su estado normal usando la misma contraseña que se uso para codificarlo");
         jButtonDecodificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDecodificarActionPerformed(evt);
@@ -446,7 +444,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
                         .addGap(61, 61, 61))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addGap(76, 76, 76))))
+                        .addGap(85, 85, 85))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -506,6 +504,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
     }//GEN-LAST:event_jButtonSeleccionarActionPerformed
 
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
+         if (tableModel != null) {
         int seleccionadosTabla[] = jTable1.getSelectedRows();
         if (seleccionadosTabla.length > 0) {
             for (int seleccionadoTabla : seleccionadosTabla) {
@@ -515,7 +514,9 @@ private OperacionesStream operacionesStream=new OperacionesStream();
             }
         }
         ControladorLimpiador.getInstance().reiniciarBusqueda();
-        this.rellenarTable();
+        this.rellenarTable();} else {
+            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la eliminacion", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
     private void jButtonUnidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUnidadesActionPerformed
@@ -595,40 +596,52 @@ private OperacionesStream operacionesStream=new OperacionesStream();
     }//GEN-LAST:event_comboExtensionesBorrablesItemStateChanged
 
     private void jButtonEliminarBorrablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarBorrablesActionPerformed
+         if (tableModel != null) {
         tableModel.getListaBorrables().forEach((fileABorrar) -> {
             fileABorrar.delete();
         });
         ControladorLimpiador.getInstance().reiniciarBusqueda();
-        this.rellenarTable();
+        this.rellenarTable();} else {
+            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la eliminacion", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonEliminarBorrablesActionPerformed
 
     private void jButtonCodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCodificarActionPerformed
-
-        int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
-        if (seleccionado >= 0) {
-           File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
-           try {
-               operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"),false);
-           } catch (IOException ex) {
-               Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-           } 
+        if (tableModel != null) {
+            int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
+            if (seleccionado >= 0) {
+                File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+                try {
+                    operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"), false);
+                } catch (IOException ex) {
+                    Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            ControladorLimpiador.getInstance().reiniciarBusqueda();
+            this.rellenarTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la codificacion", JOptionPane.ERROR_MESSAGE);
         }
-        ControladorLimpiador.getInstance().reiniciarBusqueda();
-        this.rellenarTable();
     }//GEN-LAST:event_jButtonCodificarActionPerformed
 
     private void jButtonDecodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDecodificarActionPerformed
-        int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
-        if (seleccionado >= 0) {
-           File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
-           try {
-               operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"),true);
-           } catch (IOException ex) {
-               Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-           } 
+        if (tableModel != null) {
+
+            int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
+
+            if (seleccionado >= 0) {
+                File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+                try {
+                    operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"), true);
+                } catch (IOException ex) {
+                    Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            ControladorLimpiador.getInstance().reiniciarBusqueda();
+            this.rellenarTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la codificacion", JOptionPane.ERROR_MESSAGE);
         }
-        ControladorLimpiador.getInstance().reiniciarBusqueda();
-        this.rellenarTable();
     }//GEN-LAST:event_jButtonDecodificarActionPerformed
 
     public void datosSelector() {
@@ -668,7 +681,7 @@ private OperacionesStream operacionesStream=new OperacionesStream();
             java.util.logging.Logger.getLogger(PantallaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
+
         //</editor-fold>
 
         /* Create and display the form */
