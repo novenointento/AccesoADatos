@@ -14,14 +14,18 @@ import javax.swing.table.AbstractTableModel;
  * @author daniel regueiro
  */
 public class TableModelFile extends AbstractTableModel {
-
+private long tamanoBorrable;
+private String extensionBorrable;
     private final List<File> listaFiles;
     private final String[] columnas = {"Nombre", "Tamaño", "Ruta", "Contenido", "Antiguedad", "Borrable"};
 
-    public TableModelFile(List<File> listaFiles) {
-
+    public TableModelFile(long tamanoBorrable, String extensionBorrable, List<File> listaFiles) {
+        this.tamanoBorrable = tamanoBorrable;
+        this.extensionBorrable = extensionBorrable;
         this.listaFiles = listaFiles;
     }
+
+  
 
     @Override
     public int getRowCount() {
@@ -45,7 +49,7 @@ public class TableModelFile extends AbstractTableModel {
             case 0:
                 return listaFiles.get(filas).getName();
             case 1:
-                return listaFiles.get(filas).length() + " Kb";
+                return listaFiles.get(filas).length() + " bytes";
             case 2:
                 return listaFiles.get(filas).getAbsolutePath();
             case 3:
@@ -57,7 +61,17 @@ public class TableModelFile extends AbstractTableModel {
             case 4:
                 return OperacionesFicheros.fechaCreacionArchivo(listaFiles.get(filas));
             case 5:
-                if ((listaFiles.get(filas).isDirectory() && listaFiles.get(filas).list().length == 0) || (listaFiles.get(filas).isFile() &&listaFiles.get(filas).length() < 500000)||listaFiles.get(filas).getName().endsWith("txt")) {
+                boolean borrable = false;
+                if (listaFiles.get(filas).isDirectory() && listaFiles.get(filas).list().length == 0){
+                    borrable = true;
+                }
+                if (listaFiles.get(filas).isFile() &&listaFiles.get(filas).length()>tamanoBorrable){
+                    borrable = true;
+                }
+                if (listaFiles.get(filas).getName().endsWith(extensionBorrable)) {
+                    borrable = true;
+                }
+                if (borrable){
                     return "Si";
                 } else {
                     return "No";

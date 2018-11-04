@@ -6,7 +6,12 @@
 package logica;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -21,8 +26,9 @@ import java.util.List;
  * @author Daniel Regueiro
  */
 public class OperacionesFicheros {
-private ArrayList directorios= new ArrayList();
- 
+
+    private ArrayList directorios = new ArrayList();
+
     /**
      *
      * @param ruta meto la ruta que quiero filtrar
@@ -33,17 +39,18 @@ private ArrayList directorios= new ArrayList();
      *
      */
     public List<File> listarFicheros(List listaFicheros, boolean pornombre, boolean soloDirectorios) throws MisExceptions.RutaNoValida {
-        
-    if (pornombre && !soloDirectorios) {
-    listaFicheros=listarFicherosNombre(listaFicheros);
-    }  else if (!pornombre && soloDirectorios) {
-    listaFicheros=listarSoloDirectorios(listarFicherosTamano(listaFicheros));
-    } else if (pornombre && soloDirectorios) {
-    listaFicheros=listarSoloDirectorios(listarFicherosNombre(listaFicheros));
+
+        if (pornombre && !soloDirectorios) {
+            listaFicheros = listarFicherosNombre(listaFicheros);
+        } else if (!pornombre && soloDirectorios) {
+            listaFicheros = listarSoloDirectorios(listarFicherosTamano(listaFicheros));
+        } else if (pornombre && soloDirectorios) {
+            listaFicheros = listarSoloDirectorios(listarFicherosNombre(listaFicheros));
+        }
+
+        return listaFicheros;
     }
-    
-    return listaFicheros;
-    }
+
     /**
      *
      *
@@ -62,14 +69,17 @@ private ArrayList directorios= new ArrayList();
      * @param lista
      * @return una lista ordenada por nombre
      */
-    public  List<File> listarFicherosNombre(List<File> lista) {
+    public List<File> listarFicherosNombre(List<File> lista) {
 
         lista.sort((File fichero1, File fichero2) -> fichero1.getName().compareTo(fichero2.getName()));
 
         return lista;
     }
-/**
-     *metodo usado internamente por el metodo listar ficheros para listar solo directorios
+
+    /**
+     * metodo usado internamente por el metodo listar ficheros para listar solo
+     * directorios
+     *
      * @param lista
      * @return
      */
@@ -82,6 +92,7 @@ private ArrayList directorios= new ArrayList();
         }
         return directorios;
     }
+
     /**
      *
      * @param rutaOrigen ruta donde queremos crear la lista de directorios
@@ -118,7 +129,7 @@ private ArrayList directorios= new ArrayList();
      * @return true si lo cambia, false si no lo hace
      * @throws MisExceptions.RutaNoValida
      */
-    public  boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+    public boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
         return cambiarExtensionFichero(new File(ruta), extensionAntigua, extensionNueva);
     }
 
@@ -130,7 +141,7 @@ private ArrayList directorios= new ArrayList();
      * @return true si ha podido cambiarlo y false si no
      * @throws MisExceptions.RutaNoValida
      */
-    public  boolean cambiarExtensionFichero(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+    public boolean cambiarExtensionFichero(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
 
         if (!ruta.exists()) {
             throw new MisExceptions.RutaNoValida();
@@ -145,15 +156,15 @@ private ArrayList directorios= new ArrayList();
     /**
      *
      */
-    public void limpiarDirectorios(){
-   
-   directorios=new ArrayList();
-   
-   }
+    public void limpiarDirectorios() {
+
+        directorios = new ArrayList();
+
+    }
 
     //ejercicio 2
-    public  ArrayList<File> listarFicherosRecursivo(File fichero) throws MisExceptions.RutaNoValida, IOException {
-        
+    public ArrayList<File> listarFicherosRecursivo(File fichero) throws MisExceptions.RutaNoValida, IOException {
+
         for (File ficheroLeido : fichero.listFiles()) {
             if (ficheroLeido.isFile()) {
                 directorios.add(ficheroLeido);
@@ -165,29 +176,50 @@ private ArrayList directorios= new ArrayList();
 
         return directorios;
     }
-    
-    
-    public static String fechaCreacionArchivo(File file){
-  
-   
 
-		BasicFileAttributes attrs;
-		try {
-		    attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-		    FileTime time = attrs.creationTime();
-		    
-		    String pattern = "yyyy-MM-dd HH:mm:ss";
-		    SimpleDateFormat formateadorFecha = new SimpleDateFormat(pattern);
-			
-		    String fechaFormateada = formateadorFecha.format( new Date( time.toMillis() ) );
+    public static String fechaCreacionArchivo(File file) {
 
-		   return  fechaFormateada ;
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
+        BasicFileAttributes attrs;
+        try {
+            attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            FileTime time = attrs.creationTime();
+
+            String pattern = "yyyy-MM-dd HH:mm:ss";
+            SimpleDateFormat formateadorFecha = new SimpleDateFormat(pattern);
+
+            String fechaFormateada = formateadorFecha.format(new Date(time.toMillis()));
+
+            return fechaFormateada;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "error en la fecha";
+
+    }
     
-    return "error en la fecha";
-    
-    
+    public static boolean copiarArchivo(String rutaOrigen, String rutaDestino) {
+        File origen = new File(rutaOrigen);
+        File destination = new File(rutaDestino);
+        if (origen.exists()) {
+            try {
+                InputStream in = new FileInputStream(origen);
+                OutputStream out = new FileOutputStream(destination);
+             
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+                return true;
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

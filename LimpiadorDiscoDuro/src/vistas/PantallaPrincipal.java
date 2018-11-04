@@ -5,11 +5,26 @@
  */
 package vistas;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+import logica.ChartsCreator;
 import logica.ControladorLimpiador;
+import logica.OperacionesFicheros;
 import logica.TableModelFile;
+import logica.VisualizadorPagina;
 
 /**
  *
@@ -22,16 +37,79 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private final FileNameExtensionFilter filtroTextos = new FileNameExtensionFilter("documentos texto", "txt", "docx", "pdf", "odt", "rtf");
     private final FileNameExtensionFilter filtroVideos = new FileNameExtensionFilter("Archivos de video", "avi", "mp4", "m4v", "mpeg", "mov");
     private final FileNameExtensionFilter filtroTemporales = new FileNameExtensionFilter("Archivos temporales", "tmp");
-  private File unidades[];
-  
-    private Object items[];
+    private File unidades[];
+    private File pagina;
+    private VisualizadorPagina visualizador;
+    private TableModelFile tableModel;
+
+    private enum TAMANO {
+        MEGA("60 Megas", 6), MEGAS("500 Megas", 50000), GIGAS("5 Gigas", 500000000);
+        private final String nombre;
+        private final long cantidad;
+
+        private TAMANO(String nombre, long cantidad) {
+            this.cantidad = cantidad;
+            this.nombre = nombre;
+        }
+
+        public String getNombreUnidad() {
+            return nombre;
+        }
+
+        public long getCantidad() {
+            return cantidad;
+        }
+        public static TAMANO getEnum(String nombre){
+            if(nombre.equalsIgnoreCase(MEGA.nombre)){
+            return MEGA;
+            }else if(nombre.equalsIgnoreCase(MEGAS.nombre)){
+            return MEGAS;
+            }else if(nombre.equalsIgnoreCase(GIGAS.nombre)){
+            return GIGAS;
+            }
+        return null;
+        }
+    };
+
+    private enum TIPOS {
+        txt, doc, pdf, avi, jpg, gif, mp3, tmp
+    };
+
     /**
      * Creates new form PantallaPrincipal
      */
     public PantallaPrincipal() {
         initComponents();
         this.selectorJfileChooser = new JFileChooser();
+        pagina = new File("paginaDisco.html");
         datosSelector();
+        buscarUnidades();
+        for (TAMANO tamano : TAMANO.values()) {
+            jComboBTamano.addItem(tamano.getNombreUnidad());
+        }
+        for (TIPOS tipo : TIPOS.values()) {
+            jComboTipoArchivo.addItem(tipo.toString());
+            comboExtensionesBorrables.addItem(tipo.toString());
+        }
+
+    }
+
+    public void buscarUnidades() {
+        String items[];
+        unidades = File.listRoots();
+        String it[] = new String[unidades.length];
+
+        for (int i = 0; i < unidades.length; i++) {
+            String s1 = FileSystemView.getFileSystemView().getSystemDisplayName(unidades[i]);
+            it[i] = s1;
+        }
+        items = it;
+        comboUnidades.removeAllItems();
+        comboUnidadesCopiaSeguridad.removeAllItems();
+        for (int i = 0; i < it.length; i++) {
+            comboUnidades.addItem(it[i]);
+            comboUnidadesCopiaSeguridad.addItem(unidades[i].getAbsolutePath());
+        }
     }
 
     /**
@@ -51,7 +129,14 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jCheckBoxOrdenarNombre = new javax.swing.JCheckBox();
         jButtonEliminar = new javax.swing.JButton();
         jButtonCambiarExtension = new javax.swing.JButton();
-        combo = new javax.swing.JComboBox<>();
+        textoUnidad = new javax.swing.JLabel();
+        jButtonUnidades = new javax.swing.JButton();
+        comboUnidades = new javax.swing.JComboBox<>();
+        jComboBTamano = new javax.swing.JComboBox<>();
+        jComboTipoArchivo = new javax.swing.JComboBox<>();
+        jButtonCopiaSeguridad = new javax.swing.JButton();
+        comboUnidadesCopiaSeguridad = new javax.swing.JComboBox<>();
+        comboExtensionesBorrables = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,7 +154,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jTable1.setToolTipText("Selecciona archivos de esta lista para trabajar con ellos");
         jScrollPane2.setViewportView(jTable1);
 
-        jButtonSeleccionar.setText("Seleccionar Archivos");
+        jButtonSeleccionar.setText("BUSCAR");
         jButtonSeleccionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSeleccionarActionPerformed(evt);
@@ -78,11 +163,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jCheckBoxDirectorios.setText("Buscar solo directorios");
         jCheckBoxDirectorios.setToolTipText("Seleccionalo para que la lista solo muestre carpetas");
-        jCheckBoxDirectorios.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxDirectoriosActionPerformed(evt);
-            }
-        });
 
         jCheckBoxOrdenarNombre.setText("Ordenar por nombre");
         jCheckBoxOrdenarNombre.setToolTipText("Seleccionalo antes de buscar si quieres que ordene por nombre el resultado de la busqueda");
@@ -103,67 +183,128 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        combo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        textoUnidad.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+
+        jButtonUnidades.setText("Mostrar Unidad");
+        jButtonUnidades.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonUnidadesActionPerformed(evt);
+            }
+        });
+
+        comboUnidades.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jComboBTamano.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBTamanoItemStateChanged(evt);
+            }
+        });
+
+        jButtonCopiaSeguridad.setText("Copia de Seguridad");
+        jButtonCopiaSeguridad.setToolTipText("Hace una copia de seguridad de todos los archivos de la lista");
+        jButtonCopiaSeguridad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCopiaSeguridadActionPerformed(evt);
+            }
+        });
+
+        comboUnidadesCopiaSeguridad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        comboExtensionesBorrables.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboExtensionesBorrablesItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(84, 84, 84)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52)
-                        .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(51, 51, 51)
+                        .addGap(84, 84, 84)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxOrdenarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textoUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jCheckBoxDirectorios)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 382, Short.MAX_VALUE)
-                                .addComponent(combo, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36))
+                                .addComponent(jCheckBoxOrdenarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(28, 28, 28)
+                                .addComponent(jCheckBoxDirectorios)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonUnidades, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+                            .addComponent(jComboBTamano, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboUnidades, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(comboExtensionesBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(90, 90, 90)
+                        .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboTipoArchivo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonCopiaSeguridad, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                            .addComponent(comboUnidadesCopiaSeguridad, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jCheckBoxOrdenarNombre)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(54, 54, 54)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jCheckBoxDirectorios)
-                            .addComponent(combo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jCheckBoxOrdenarNombre)
+                            .addComponent(jCheckBoxDirectorios)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(comboUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 22, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(48, 48, 48)
+                                .addComponent(textoUnidad))
+                            .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButtonUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(98, 98, 98)
+                        .addComponent(jComboBTamano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(comboExtensionesBorrables, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(comboUnidadesCopiaSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboTipoArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(473, 473, 473))
+                    .addComponent(jButtonCopiaSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(207, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -178,7 +319,6 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
             //Crear un objeto File con el archivo elegido
             ControladorLimpiador.getInstance().recogerColeccionFiles(selectorJfileChooser.getSelectedFile());
-
             this.rellenarTable();
         }
     }//GEN-LAST:event_jButtonSeleccionarActionPerformed
@@ -186,7 +326,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
         int seleccionado = jTable1.getSelectedRow();
         if (seleccionado >= 0) {
-           File archivo= ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+            File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
             archivo.delete();
             ControladorLimpiador.getInstance().reiniciarBusqueda();
             this.rellenarTable();
@@ -195,13 +335,83 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
-    private void jCheckBoxDirectoriosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxDirectoriosActionPerformed
+    private void jButtonUnidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUnidadesActionPerformed
 
-    }//GEN-LAST:event_jCheckBoxDirectoriosActionPerformed
+        if (comboUnidades.getSelectedIndex() != -1) {
+            long espaciolibre = unidades[comboUnidades.getSelectedIndex()].getUsableSpace();
+            long espacioTotal = unidades[comboUnidades.getSelectedIndex()].getTotalSpace();
+            int espacioLibreGb = (int) (((espaciolibre / 1024) / 1024) / 1024);
+            int espacioTotalGb = (int) (((espacioTotal / 1024) / 1024) / 1024);
+            Map<String, Integer> datos = new TreeMap();
+            datos.put("Espacio libre", espacioLibreGb);
+            datos.put("Espacio ocupado", espacioTotalGb - espacioLibreGb);
+
+            try {
+                ChartsCreator.createChart("Espacio de la unidad", "Espacio", datos, ChartsCreator.TIPO_GRAFICO.DOUGHNUT, pagina);
+            } catch (IOException ex) {
+                Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        try {
+
+            Desktop.getDesktop().browse(new URI("paginaDisco.html"));
+
+        } catch (URISyntaxException ex) {
+            System.out.println(ex);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }//GEN-LAST:event_jButtonUnidadesActionPerformed
 
     private void jButtonCambiarExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCambiarExtensionActionPerformed
-        // TODO add your handling code here:
+        int seleccionado = jTable1.getSelectedRow();
+        if (seleccionado >= 0) {
+            File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+            String ruta = archivo.getAbsolutePath();
+            String rutaCortada = ruta.substring(0, (ruta.length() - 4));
+            File nuevaRuta = new File(rutaCortada + "." + jComboTipoArchivo.getSelectedItem());
+            archivo.renameTo(nuevaRuta);
+            ControladorLimpiador.getInstance().reiniciarBusqueda();
+            this.rellenarTable();
+        }
     }//GEN-LAST:event_jButtonCambiarExtensionActionPerformed
+
+    private void jButtonCopiaSeguridadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopiaSeguridadActionPerformed
+        List<File> listaSeguridad = ControladorLimpiador.getInstance().devolverColeccionArchivos();
+        boolean copiaRealizada = false;
+        if (listaSeguridad == null) {
+            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos a copiar", "Error en la copia", JOptionPane.ERROR_MESSAGE);
+        } else {
+            File carpetaCopiaSeguridad = new File(comboUnidadesCopiaSeguridad.getSelectedItem() + "Copia de seguridad");
+            carpetaCopiaSeguridad.mkdir();
+            for (File file : listaSeguridad) {
+                if (file.isFile()) {
+                    File copiaSeguridad = new File(carpetaCopiaSeguridad.getAbsolutePath() + "/" + file.getName());
+                    copiaRealizada = OperacionesFicheros.copiarArchivo(file.getAbsolutePath(), copiaSeguridad.getAbsolutePath());
+                }
+            }
+            if (copiaRealizada) {
+                JOptionPane.showMessageDialog(this, "Se ha acabado de realizar la copia de seguridad", "Copia seguridad", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se ha podido realizar la copia de seguridad", "Copia seguridad", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButtonCopiaSeguridadActionPerformed
+
+    private void jComboBTamanoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBTamanoItemStateChanged
+        if (tableModel != null) {
+            ControladorLimpiador.getInstance().reiniciarBusqueda();
+            rellenarTable();
+        }
+
+    }//GEN-LAST:event_jComboBTamanoItemStateChanged
+
+    private void comboExtensionesBorrablesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboExtensionesBorrablesItemStateChanged
+        if (tableModel != null) {
+            ControladorLimpiador.getInstance().reiniciarBusqueda();
+            rellenarTable();
+        }
+    }//GEN-LAST:event_comboExtensionesBorrablesItemStateChanged
 
     public void datosSelector() {
         selectorJfileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -213,10 +423,14 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     }
 
     public void rellenarTable() {
-
-        jTable1.setModel(new TableModelFile(ControladorLimpiador.getInstance().ordenarFiles(ControladorLimpiador.getInstance().SeleccionarFilesRecursivamente(), jCheckBoxOrdenarNombre.isSelected(), jCheckBoxDirectorios.isSelected())));
+    long tamanoMaximo=  TAMANO.valueOf(TAMANO.getEnum(jComboBTamano.getSelectedItem().toString()).toString()).getCantidad();
+     
+        tableModel = new TableModelFile(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), ControladorLimpiador.getInstance().ordenarFiles(ControladorLimpiador.getInstance().SeleccionarFilesRecursivamente(), jCheckBoxOrdenarNombre.isSelected(), jCheckBoxDirectorios.isSelected()));
+    
+        jTable1.setModel(tableModel);
 
     }
+    
 
     /**
      * @param args the command line arguments
@@ -249,21 +463,28 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new PantallaPrincipal().setVisible(true);
+
             }
         });
     }
-    
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> combo;
+    private javax.swing.JComboBox<String> comboExtensionesBorrables;
+    private javax.swing.JComboBox<String> comboUnidades;
+    private javax.swing.JComboBox<String> comboUnidadesCopiaSeguridad;
     private javax.swing.JButton jButtonCambiarExtension;
+    private javax.swing.JButton jButtonCopiaSeguridad;
     private javax.swing.JButton jButtonEliminar;
     private javax.swing.JButton jButtonSeleccionar;
+    private javax.swing.JButton jButtonUnidades;
     private javax.swing.JCheckBox jCheckBoxDirectorios;
     private javax.swing.JCheckBox jCheckBoxOrdenarNombre;
+    private javax.swing.JComboBox<String> jComboBTamano;
+    private javax.swing.JComboBox<String> jComboTipoArchivo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel textoUnidad;
     // End of variables declaration//GEN-END:variables
 }

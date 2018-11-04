@@ -33,7 +33,7 @@ public class OperacionesStream {
      * Metodo para leer el contenido de un fichero de texto
      *
      * @param archivo
-     * @return string con el texto
+     * @return string con el texto del archivo
      * @throws FileNotFoundException
      * @throws UnsupportedEncodingException
      * @throws IOException
@@ -51,6 +51,12 @@ public class OperacionesStream {
         return texto;
     }
 
+    /**
+     *
+     * @param cadena string donde queremos contar la letra especifica
+     * @param caracter que queremos saber cuantas veces se repite en el texto
+     * @return int con el numero de veces que se repite
+     */
     public int contarChar(String cadena, char caracter) {
         int contador = 0;
         for (int x = 0; x < cadena.length(); x++) {
@@ -76,6 +82,11 @@ public class OperacionesStream {
         return cadena;
     }
 
+    /**
+     *metodo que lista el numero de palabras diferentes que aperece en un texto y las veces que se repite cada una
+     * @param texto que queremos contar
+     * @return map con las palabras y las veces que se repite
+     */
     public static Map<String, Integer> listarPalabras(String texto) {
         TreeMap<String, Integer> coleccion = new TreeMap<String, Integer>();
         texto = limpiadorTextos(texto);
@@ -94,6 +105,11 @@ public class OperacionesStream {
         return coleccion;
     }
 
+    /**
+     *metodo para quitar de un texto simbolos que no pertenezcan a palabras, para despues usar en el silabador o separador por palabras
+     * @param textoSucio con los simbolos que no queremos
+     * @return string con el texto sin los simbolos
+     */
     public static String limpiadorTextos(String textoSucio) {
         String[] stringAlimpiar = {",", ".", ";", ":", "-", "¡", "¿", "'", "\""};
         for (String mierda : stringAlimpiar) {
@@ -102,6 +118,15 @@ public class OperacionesStream {
         return textoSucio;
     }
 
+    /**
+     *metodo que codifica un archivo pasandole como parametro un numero para codificar
+     * @param archivoCodificar
+     * @param archivoCodificado
+     * @param finaliza
+     * @param codificacion
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void codificadorTxt(File archivoCodificar, File archivoCodificado, String finaliza, int codificacion) throws FileNotFoundException, IOException {
 
         if (archivoCodificar.exists() && archivoCodificar.getName().endsWith(finaliza)) {
@@ -131,6 +156,14 @@ public class OperacionesStream {
 
     }
 
+    /**
+     *
+     * @param archivo tipo texto 
+     * @param finaliza
+     * @return coleccion map de letras y veces que se repite en el texto que le metimos por parametro
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static Map contadorLetras(File archivo, String finaliza) throws FileNotFoundException, IOException {
         int k = 0;
         int v = 1;

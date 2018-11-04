@@ -8,16 +8,14 @@ package logica;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  *
  * @author daniel
  */
 public class ControladorLimpiador {
-private OperacionesFicheros opFich=new OperacionesFicheros();
+
+    private OperacionesFicheros opFich = new OperacionesFicheros();
     private File archivo;
     private List<File> coleccionArchivos;
     private static ControladorLimpiador gestor = null;
@@ -45,29 +43,31 @@ private OperacionesFicheros opFich=new OperacionesFicheros();
 
     }
 
-    public void reiniciarBusqueda(){
-   opFich.limpiarDirectorios();
-    
-    }
-    public List<File> devolverColeccionArchivos(){
-     return coleccionArchivos;
-    }
-public List<File>ordenarFiles(List archivos,boolean nombre,boolean directorio) {
-    try {
-        List<File> listaOrdenada;
-        return listaOrdenada=opFich.listarFicheros(archivos, nombre, directorio);
-    } catch (MisExceptions.RutaNoValida ex) {
-        System.out.println("Error en el metodo ordenarFiles, clase controlador");
-        return null;
+    public void reiniciarBusqueda() {
+        opFich.limpiarDirectorios();
+
     }
 
+    public List<File> devolverColeccionArchivos() {
+        return coleccionArchivos;
+    }
 
-}
+    public List<File> ordenarFiles(List archivos, boolean nombre, boolean directorio) {
+        try {
+            List<File> listaOrdenada;
+            return listaOrdenada = opFich.listarFicheros(archivos, nombre, directorio);
+        } catch (MisExceptions.RutaNoValida ex) {
+            System.out.println("Error en el metodo ordenarFiles, clase controlador");
+            return null;
+        }
+
+    }
+
     public List<File> SeleccionarFilesRecursivamente() {
 
         try {
-            coleccionArchivos=opFich.listarFicherosRecursivo(archivo);
-            
+            coleccionArchivos = opFich.listarFicherosRecursivo(archivo);
+
             return coleccionArchivos;
         } catch (MisExceptions.RutaNoValida ex) {
             return null;
