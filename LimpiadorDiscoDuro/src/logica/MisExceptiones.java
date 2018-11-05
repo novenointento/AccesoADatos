@@ -9,7 +9,7 @@ package logica;
  *
  * @author gnord
  */
-public class MisExceptions {
+public class MisExceptiones {
 
     public static class CarpetaVacia extends Exception {
 

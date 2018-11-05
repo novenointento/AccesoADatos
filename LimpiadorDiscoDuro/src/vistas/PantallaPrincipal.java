@@ -20,16 +20,16 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.TableRowSorter;
-import logica.ChartsCreator;
-import logica.ControladorLimpiador;
+import logica.CreadorPaginas;
+import logica.LogicaGuardadoColeccion;
 import logica.OperacionesFicheros;
-import logica.OperacionesStream;
+import logica.OperacionesFicherosTexto;
 import logica.TableModelFile;
 import logica.VisualizadorPagina;
 
 /**
  *
- * @author daniel
+ * @author Daniel Regueiro
  */
 public class PantallaPrincipal extends javax.swing.JFrame {
 
@@ -38,14 +38,14 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private final FileNameExtensionFilter filtroTextos = new FileNameExtensionFilter("documentos texto", "txt", "docx", "pdf", "odt", "rtf");
     private final FileNameExtensionFilter filtroVideos = new FileNameExtensionFilter("Archivos de video", "avi", "mp4", "m4v", "mpeg", "mov");
     private final FileNameExtensionFilter filtroTemporales = new FileNameExtensionFilter("Archivos temporales", "tmp");
-    private File unidades[];
-    private File pagina;
+    private File unidadesInstaladas[];
+    private File paginaWeb;
     private VisualizadorPagina visualizador;
     private TableModelFile tableModel;
-    private OperacionesStream operacionesStream = new OperacionesStream();
+    private OperacionesFicherosTexto logicaOperacionesStream = new OperacionesFicherosTexto();
 
     private enum TAMANO {
-        BYTE("60 Bytes", 60), MEGAS("500 Megas", 5 * 1024 * 1024), GIGAS("5 Gigas", 5 * 1024 * 1024 * 1024);
+        BYTE("60 Bytes", 60), MEGAS("500 Megas", 5 * 1024 * 1024 * 1024), GIGAS("5 Gigas", 5 * 1024 * 1024 * 1024 * 1024);
         private final String nombre;
         private final long cantidad;
 
@@ -84,8 +84,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     public PantallaPrincipal() {
         initComponents();
         this.selectorJfileChooser = new JFileChooser();
-        pagina = new File("paginaDisco.html");
-        datosSelector();
+        paginaWeb = new File("paginaDisco.html");
+        filtrosYConfiguracionJFileChooser();
         buscarUnidades();
         for (TAMANO tamano : TAMANO.values()) {
             jComboBTamano.addItem(tamano.getNombreUnidad());
@@ -97,21 +97,23 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
     }
 
+    /**
+     * metodo que busca que unidades hay en el sistema operativo en ese momento
+     */
     public void buscarUnidades() {
-        String items[];
-        unidades = File.listRoots();
-        String it[] = new String[unidades.length];
-
-        for (int i = 0; i < unidades.length; i++) {
-            String s1 = FileSystemView.getFileSystemView().getSystemDisplayName(unidades[i]);
-            it[i] = s1;
+        String itemsDelJcombo[];
+        unidadesInstaladas = File.listRoots();
+        String iteratorUnidad[] = new String[unidadesInstaladas.length];
+        for (int i = 0; i < unidadesInstaladas.length; i++) {
+            String nombreDeLaUnidad = FileSystemView.getFileSystemView().getSystemDisplayName(unidadesInstaladas[i]);
+            iteratorUnidad[i] = nombreDeLaUnidad;
         }
-        items = it;
+        itemsDelJcombo = iteratorUnidad;
         comboUnidades.removeAllItems();
         comboUnidadesCopiaSeguridad.removeAllItems();
-        for (int i = 0; i < it.length; i++) {
-            comboUnidades.addItem(it[i]);
-            comboUnidadesCopiaSeguridad.addItem(unidades[i].getAbsolutePath());
+        for (int i = 0; i < iteratorUnidad.length; i++) {
+            comboUnidades.addItem(iteratorUnidad[i]);
+            comboUnidadesCopiaSeguridad.addItem(unidadesInstaladas[i].getAbsolutePath());
         }
     }
 
@@ -126,7 +128,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTablaPrincipal = new javax.swing.JTable();
         jButtonEliminar = new javax.swing.JButton();
         jButtonCambiarExtension = new javax.swing.JButton();
         textoUnidad = new javax.swing.JLabel();
@@ -155,7 +157,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTablaPrincipal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -166,8 +168,8 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTable1.setToolTipText("Selecciona archivos de esta lista para trabajar con ellos");
-        jScrollPane2.setViewportView(jTable1);
+        jTablaPrincipal.setToolTipText("Selecciona archivos de esta lista para trabajar con ellos");
+        jScrollPane2.setViewportView(jTablaPrincipal);
 
         jButtonEliminar.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButtonEliminar.setForeground(new java.awt.Color(204, 0, 0));
@@ -181,7 +183,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         jButtonCambiarExtension.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButtonCambiarExtension.setText("Cambiar Extensión");
-        jButtonCambiarExtension.setToolTipText("Selecciona un archivo de la lista para eliminarlo");
+        jButtonCambiarExtension.setToolTipText("Selecciona un archivo de la lista para cambiar su extension");
         jButtonCambiarExtension.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCambiarExtensionActionPerformed(evt);
@@ -191,6 +193,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         textoUnidad.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
 
         jComboTipoArchivo.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jComboTipoArchivo.setToolTipText("Extensión que recibira el archivo seleccionado");
 
         jButtonCopiaSeguridad.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButtonCopiaSeguridad.setText("Copia de Seguridad");
@@ -203,6 +206,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         comboUnidadesCopiaSeguridad.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         comboUnidadesCopiaSeguridad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboUnidadesCopiaSeguridad.setToolTipText("Unidad donde se realizara la copia");
 
         jButtonSeleccionar.setFont(new java.awt.Font("Dialog", 2, 36)); // NOI18N
         jButtonSeleccionar.setText("Buscar");
@@ -276,7 +280,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(jCheckBoxDirectorios))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(comboUnidadesCopiaSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -285,10 +289,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButtonCopiaSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonCambiarExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(22, 22, 22))
+                            .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jButtonSeleccionar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(26, 26, 26))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {comboUnidadesCopiaSeguridad, jComboTipoArchivo});
@@ -307,6 +310,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         comboUnidades.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         comboUnidades.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboUnidades.setToolTipText("Selecciona la unidad");
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel1.setText("Unidades:");
@@ -344,6 +348,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jComboBTamano.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jComboBTamano.setToolTipText("Tamaño minimo que queremos eliminar");
         jComboBTamano.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBTamanoItemStateChanged(evt);
@@ -351,6 +356,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         });
 
         comboExtensionesBorrables.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        comboExtensionesBorrables.setToolTipText("Extensiones que queremos eliminar");
         comboExtensionesBorrables.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 comboExtensionesBorrablesItemStateChanged(evt);
@@ -489,84 +495,93 @@ public class PantallaPrincipal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * selecciona un archivo o lista todo el contenido de una carpeta y lo
+     * muestra en la tabla para poder trabajar con ello en el resto de los
+     * metodos
+     */
     private void jButtonSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSeleccionarActionPerformed
 
-        ControladorLimpiador.getInstance().reiniciarBusqueda();
+        LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
         int respuesta = selectorJfileChooser.showOpenDialog(this);
         if (respuesta == JFileChooser.APPROVE_OPTION) {
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-
-            //Crear un objeto File con el archivo elegido
-            ControladorLimpiador.getInstance().recogerColeccionFiles(selectorJfileChooser.getSelectedFile());
-            this.rellenarTable();
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda(); //reinicio el file para que se limpie la tabla
+            LogicaGuardadoColeccion.getInstance().recogerColeccionFiles(selectorJfileChooser.getSelectedFile());  //Crear un objeto File con el archivo elegido
+            this.rellenarTablaPrincipal();
         }
     }//GEN-LAST:event_jButtonSeleccionarActionPerformed
-
+    /**
+     * este metodo elimina la seleccion que tengamos en la tabla en esos
+     * momentos
+     */
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
-         if (tableModel != null) {
-        int seleccionadosTabla[] = jTable1.getSelectedRows();
-        if (seleccionadosTabla.length > 0) {
-            for (int seleccionadoTabla : seleccionadosTabla) {
-                int seleccionadoLista = jTable1.convertRowIndexToModel(seleccionadoTabla);
-                File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionadoLista);
-                archivo.delete();
+        if (tableModel != null) {
+            int seleccionadosTabla[] = jTablaPrincipal.getSelectedRows();
+            if (seleccionadosTabla.length > 0) {
+                for (int seleccionadoTabla : seleccionadosTabla) {
+                    int seleccionadoLista = jTablaPrincipal.convertRowIndexToModel(seleccionadoTabla);
+                    File archivo = LogicaGuardadoColeccion.getInstance().devolverColeccionArchivos().get(seleccionadoLista);
+                    archivo.delete();
+                }
             }
-        }
-        ControladorLimpiador.getInstance().reiniciarBusqueda();
-        this.rellenarTable();} else {
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            this.rellenarTablaPrincipal();
+        } else {
             JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la eliminacion", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonEliminarActionPerformed
-
+    /**
+     * crea la pagina web y la abre, mostrando las unidades del sistema y el
+     * espacio ocupado y libre *
+     */
     private void jButtonUnidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUnidadesActionPerformed
 
         if (comboUnidades.getSelectedIndex() != -1) {
-            long espaciolibre = unidades[comboUnidades.getSelectedIndex()].getUsableSpace();
-            long espacioTotal = unidades[comboUnidades.getSelectedIndex()].getTotalSpace();
+            long espaciolibre = unidadesInstaladas[comboUnidades.getSelectedIndex()].getUsableSpace();
+            long espacioTotal = unidadesInstaladas[comboUnidades.getSelectedIndex()].getTotalSpace();
             int espacioLibreGb = (int) (((espaciolibre / 1024) / 1024) / 1024);
             int espacioTotalGb = (int) (((espacioTotal / 1024) / 1024) / 1024);
             Map<String, Integer> datos = new TreeMap();
             datos.put("Espacio libre", espacioLibreGb);
             datos.put("Espacio ocupado", espacioTotalGb - espacioLibreGb);
-
             try {
-                ChartsCreator.createChart("Espacio de la unidad", "Espacio", datos, ChartsCreator.TIPO_GRAFICO.DOUGHNUT, pagina);
+                CreadorPaginas.crearPagina("Espacio de la unidad", "Espacio", datos, CreadorPaginas.TIPO_GRAFICO.DOUGHNUT, paginaWeb);
             } catch (IOException ex) {
                 Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try {
-
             Desktop.getDesktop().browse(new URI("paginaDisco.html"));
-
         } catch (URISyntaxException | IOException ex) {
             System.out.println(ex);
         }
     }//GEN-LAST:event_jButtonUnidadesActionPerformed
 
     private void jButtonCambiarExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCambiarExtensionActionPerformed
-        int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
+        int seleccionado = jTablaPrincipal.convertRowIndexToModel(jTablaPrincipal.getSelectedRow());
         if (seleccionado >= 0) {
-            File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+            File archivo = LogicaGuardadoColeccion.getInstance().devolverColeccionArchivos().get(seleccionado);
             String ruta = archivo.getAbsolutePath();
             String rutaCortada = ruta.substring(0, (ruta.length() - 4));
             File nuevaRuta = new File(rutaCortada + "." + jComboTipoArchivo.getSelectedItem());
             archivo.renameTo(nuevaRuta);
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-            this.rellenarTable();
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            this.rellenarTablaPrincipal();
         }
     }//GEN-LAST:event_jButtonCambiarExtensionActionPerformed
-
+    /**
+     * metodo que realiza una copia de seguridad de todos los archivos que esten
+     * en la tabla principal
+     */
     private void jButtonCopiaSeguridadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopiaSeguridadActionPerformed
-        List<File> listaSeguridad = ControladorLimpiador.getInstance().devolverColeccionArchivos();
+        List<File> listaParaCopiaSeguridad = LogicaGuardadoColeccion.getInstance().devolverColeccionArchivos();
         boolean copiaRealizada = false;
-        if (listaSeguridad == null) {
+        if (listaParaCopiaSeguridad == null) {
             JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos a copiar", "Error en la copia", JOptionPane.ERROR_MESSAGE);
         } else {
             File carpetaCopiaSeguridad = new File(comboUnidadesCopiaSeguridad.getSelectedItem() + "Copia de seguridad");
             carpetaCopiaSeguridad.mkdir();
-            for (File file : listaSeguridad) {
+            for (File file : listaParaCopiaSeguridad) {
                 if (file.isFile()) {
                     File copiaSeguridad = new File(carpetaCopiaSeguridad.getAbsolutePath() + "/" + file.getName());
                     copiaRealizada = OperacionesFicheros.copiarArchivo(file.getAbsolutePath(), copiaSeguridad.getAbsolutePath());
@@ -579,72 +594,91 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButtonCopiaSeguridadActionPerformed
-
+    /**
+     * metodo para refrescar la tabla cada vez que cambiamos el tamaño de los
+     * items borrables
+     */
     private void jComboBTamanoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBTamanoItemStateChanged
         if (tableModel != null) {
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-            rellenarTable();
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            rellenarTablaPrincipal();
         }
 
     }//GEN-LAST:event_jComboBTamanoItemStateChanged
-
+    /**
+     * metodo para refrescar la tabla cada vez que cambiamos la extension de los
+     * items borrables
+     */
     private void comboExtensionesBorrablesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboExtensionesBorrablesItemStateChanged
         if (tableModel != null) {
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-            rellenarTable();
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            rellenarTablaPrincipal();
         }
     }//GEN-LAST:event_comboExtensionesBorrablesItemStateChanged
 
     private void jButtonEliminarBorrablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarBorrablesActionPerformed
-         if (tableModel != null) {
-        tableModel.getListaBorrables().forEach((fileABorrar) -> {
-            fileABorrar.delete();
-        });
-        ControladorLimpiador.getInstance().reiniciarBusqueda();
-        this.rellenarTable();} else {
-            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la eliminacion", JOptionPane.ERROR_MESSAGE);
+        if (tableModel != null) {
+            tableModel.getListaBorrables().forEach((fileABorrar) -> {
+                fileABorrar.delete();
+            });
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            this.rellenarTablaPrincipal();
+        } else {
+            JOptionPane.showMessageDialog(this, "No hay archivos para borrar", "Error en la eliminacion", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonEliminarBorrablesActionPerformed
-
+    /**
+     * metodo que encrypta un archivo moviendo pasandole una palabra como
+     * contraseña
+     */
     private void jButtonCodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCodificarActionPerformed
         if (tableModel != null) {
-            int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
-            if (seleccionado >= 0) {
-                File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+            int posicionDelArchivoSeleccionado = jTablaPrincipal.convertRowIndexToModel(jTablaPrincipal.getSelectedRow());
+            if (posicionDelArchivoSeleccionado >= 0) {
+                File archivoSeleccionado = LogicaGuardadoColeccion.getInstance().devolverColeccionArchivos().get(posicionDelArchivoSeleccionado);
                 try {
-                    operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"), false);
+                    logicaOperacionesStream.codificadorArchivosTexto(archivoSeleccionado, JOptionPane.showInputDialog("Introduzca la contraseña"), false);
+                    JOptionPane.showMessageDialog(this, "Se ha codificado el archivo", "Codificador", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException ex) {
                     Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-            this.rellenarTable();
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            this.rellenarTablaPrincipal();
         } else {
             JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la codificacion", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonCodificarActionPerformed
-
+    /**
+     * metodo que desencripta el archivo elegido pasandole la contraseña si
+     * escogemos un archivo no encriptado lo encriptara
+     */
     private void jButtonDecodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDecodificarActionPerformed
         if (tableModel != null) {
 
-            int seleccionado = jTable1.convertRowIndexToModel(jTable1.getSelectedRow());
+            int posicionArchivoSeleccionado = jTablaPrincipal.convertRowIndexToModel(jTablaPrincipal.getSelectedRow());
 
-            if (seleccionado >= 0) {
-                File archivo = ControladorLimpiador.getInstance().devolverColeccionArchivos().get(seleccionado);
+            if (posicionArchivoSeleccionado >= 0) {
+                File archivoFuente = LogicaGuardadoColeccion.getInstance().devolverColeccionArchivos().get(posicionArchivoSeleccionado);
                 try {
-                    operacionesStream.codificadorTxt(archivo, JOptionPane.showInputDialog("Introduzca la contraseña"), true);
+                    logicaOperacionesStream.codificadorArchivosTexto(archivoFuente, JOptionPane.showInputDialog("Introduzca la contraseña"), true);
+                    JOptionPane.showMessageDialog(this, "Se ha decodificado el archivo", "Codificador", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException ex) {
                     Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            ControladorLimpiador.getInstance().reiniciarBusqueda();
-            this.rellenarTable();
+            LogicaGuardadoColeccion.getInstance().reiniciarBusqueda();
+            this.rellenarTablaPrincipal();
         } else {
-            JOptionPane.showMessageDialog(this, "Cree primero la lista de archivos ", "Error en la codificacion", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No hay archivo para codificar ", "Error en la codificacion", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDecodificarActionPerformed
 
-    public void datosSelector() {
+    /**
+     * metodo para pasar los filtros y los parametros que queremos al
+     * jfilechooser
+     */
+    public void filtrosYConfiguracionJFileChooser() {
         selectorJfileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         selectorJfileChooser.setCurrentDirectory(new File("d:/"));
         selectorJfileChooser.setFileFilter(filtroTextos);
@@ -653,12 +687,15 @@ public class PantallaPrincipal extends javax.swing.JFrame {
         selectorJfileChooser.setFileFilter(filtroImagenes);
     }
 
-    public void rellenarTable() {
+    /**
+     * metodo para rellenar y refrescar la tabla del frame principal
+     */
+    public void rellenarTablaPrincipal() {
         long tamanoMaximo = TAMANO.valueOf(TAMANO.getEnum(jComboBTamano.getSelectedItem().toString()).toString()).getCantidad();
-        tableModel = new TableModelFile(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), ControladorLimpiador.getInstance().ordenarFiles(ControladorLimpiador.getInstance().SeleccionarFilesRecursivamente(), false, jCheckBoxDirectorios.isSelected()));
-        jTable1.setModel(tableModel);
+        tableModel = new TableModelFile(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), LogicaGuardadoColeccion.getInstance().ordenarFiles(LogicaGuardadoColeccion.getInstance().SeleccionarFilesRecursivamente(), false, jCheckBoxDirectorios.isSelected()));
+        jTablaPrincipal.setModel(tableModel);
         TableRowSorter<TableModelFile> sorter = new TableRowSorter<>(tableModel);
-        jTable1.setRowSorter(sorter);
+        jTablaPrincipal.setRowSorter(sorter);
     }
 
     /**
@@ -716,7 +753,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTablaPrincipal;
     private javax.swing.JLabel textoUnidad;
     // End of variables declaration//GEN-END:variables
 }

@@ -21,13 +21,13 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 /**
- *
- * @author daniel
+ *clase para el manejo de ficheros de texto
+ * @author Daniel Regueiro
  */
-public class OperacionesStream {
+public class OperacionesFicherosTexto {
 
-    private FileInputStream in = null;
-    private FileOutputStream out = null;
+    private FileInputStream lectorEntradaDatos = null;
+    private FileOutputStream escritorFlujoDatos = null;
 
     /**
      * Metodo para leer el contenido de un fichero de texto
@@ -42,7 +42,7 @@ public class OperacionesStream {
 
         InputStreamReader in = new InputStreamReader(new FileInputStream(archivo), "UTF-8");
         BufferedReader br = new BufferedReader(in);
-        String texto = "";
+        String texto = ""; //inicializo las variables sin nada dentro
         String linea = "";
         while ((linea = br.readLine()) != null) {
             texto = texto.concat(linea + "\n");
@@ -52,21 +52,28 @@ public class OperacionesStream {
     }
 
     /**
+     * cuenta los char que tiene una cadena especificada
      *
-     * @param cadena string donde queremos contar la letra especifica
+     * @param cadenaAContar string donde queremos contar la letra especifica
      * @param caracter que queremos saber cuantas veces se repite en el texto
      * @return int con el numero de veces que se repite
      */
-    public int contarChar(String cadena, char caracter) {
-        int contador = 0;
-        for (int x = 0; x < cadena.length(); x++) {
+    public int contarChar(String cadenaAContar, char caracter) {
+        int contadorletras = 0;
+        for (int x = 0; x < cadenaAContar.length(); x++) {
 
-            contador++;
+            contadorletras++;
 
         }
-        return contador;
+        return contadorletras;
     }
 
+    /**
+     * lee frase a frase el contenido de un archivo de texto
+     *
+     * @param file de donde queremos leer el texto
+     * @return
+     */
     public static String leercadena(File file) {
         String cadena = null;
         try {
@@ -90,7 +97,7 @@ public class OperacionesStream {
      * @return map con las palabras y las veces que se repite
      */
     public static Map<String, Integer> listarPalabras(String texto) {
-        TreeMap<String, Integer> coleccion = new TreeMap<String, Integer>();
+        TreeMap<String, Integer> coleccion = new TreeMap<>();
         texto = limpiadorTextos(texto);
         StringTokenizer troceador = new StringTokenizer(texto);
 
@@ -123,78 +130,74 @@ public class OperacionesStream {
     }
 
     /**
-     * metodo que codifica un archivo pasandole como parametro un numero para
-     * codificar
+     * codifica un archivo de texto moviento el valor de cada char con un numero
+     * generado por con la palabra que se use como contraseña
      *
      * @param archivoCodificar
-     * @param archivoCodificado
-     * @param finaliza
-     * @param codificacion
+     * @param contasenya
+     * @param decodificar
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void codificadorTxt(File archivoCodificar, String contasenya, boolean decodificar) throws FileNotFoundException, IOException {
+    public void codificadorArchivosTexto(File archivoCodificar, String contasenya, boolean decodificar) throws FileNotFoundException, IOException {
         String rutaOriginal;
-        rutaOriginal=archivoCodificar.getAbsolutePath();
-        int codificacion = 0;
+        rutaOriginal = archivoCodificar.getAbsolutePath();
+        int claveCodificacion = 0;
         for (int i = 0; i < contasenya.length(); i++) {
-            codificacion = codificacion + contasenya.charAt(i);
+            claveCodificacion = claveCodificacion + contasenya.charAt(i);
         }
         if (decodificar) {
-            codificacion = codificacion * -1;
+            claveCodificacion = claveCodificacion * -1;
         }
         File archivoCodificado = new File(archivoCodificar.getParent() + "/codificado " + archivoCodificar.getName());
         if (archivoCodificar.exists()) {
             try {
-                in = new FileInputStream(archivoCodificar);
-                out = new FileOutputStream(archivoCodificado);
+                lectorEntradaDatos = new FileInputStream(archivoCodificar);
+                escritorFlujoDatos = new FileOutputStream(archivoCodificado);
                 int c;
 
-                while ((c = in.read()) != -1) {
-                    out.write(c + codificacion);
+                while ((c = lectorEntradaDatos.read()) != -1) {
+                    escritorFlujoDatos.write(c + claveCodificacion);
                 }
             } finally {
-                if (in != null) {
-                    in.close();
-                 
+                if (lectorEntradaDatos != null) {
+                    lectorEntradaDatos.close();
                 }
-                if (out != null) {
-                    out.close();
+                if (escritorFlujoDatos != null) {
+                    escritorFlujoDatos.close();
                 }
             }
         }
         archivoCodificar.delete();
         archivoCodificado.renameTo(new File(rutaOriginal));
-        
-        
     }
 
-
     /**
+     * metodo que cuenta cuantas veces se repite cada letra en un texto
      *
-     * @param archivo tipo texto
+     * @param archivoAContarLetras tipo texto
      * @param finaliza
      * @return coleccion map de letras y veces que se repite en el texto que le
      * metimos por parametro
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static Map contadorLetras(File archivo, String finaliza) throws FileNotFoundException, IOException {
-        int k = 0;
-        int v = 1;
-        Map coleccion = new HashMap(k, v);
-        InputStreamReader in = new InputStreamReader(new FileInputStream(archivo), "UTF-8");
-        if (archivo.exists() && archivo.getName().endsWith(finaliza)) {
+    public static Map contadorLetras(File archivoAContarLetras, String finaliza) throws FileNotFoundException, IOException {
+        int clave = 0;
+        int valor = 1;
+        Map coleccionLetrasYRepeticiones = new HashMap(clave, valor);
+        InputStreamReader in = new InputStreamReader(new FileInputStream(archivoAContarLetras), "UTF-8");
+        if (archivoAContarLetras.exists() && archivoAContarLetras.getName().endsWith(finaliza)) {
             try {
                 int c;
                 while ((c = in.read()) != -1) {
-                    if (coleccion.containsKey(c)) {
-                        v = (int) coleccion.get(c);
-                        v++;
-                        coleccion.replace(c, v);
-                        v = 1;
+                    if (coleccionLetrasYRepeticiones.containsKey(c)) {
+                        valor = (int) coleccionLetrasYRepeticiones.get(c);
+                        valor++;
+                        coleccionLetrasYRepeticiones.replace(c, valor);
+                        valor = 1;
                     } else {
-                        coleccion.put(c, v);
+                        coleccionLetrasYRepeticiones.put(c, valor);
                     }
                 }
             } finally {
@@ -203,9 +206,17 @@ public class OperacionesStream {
                 }
             }
         }
-        return coleccion;
+        return coleccionLetrasYRepeticiones;
     }
 
+    /**
+     * metodo para imprimir por consola las letras y veces que se repiten en el
+     * metodo contador de letras
+     *
+     * @param archivo
+     * @param finaliza
+     * @throws IOException
+     */
     public void imprimirLetrasColeccion(File archivo, String finaliza) throws IOException {
         int k = 0;
         int v = 1;
@@ -214,8 +225,7 @@ public class OperacionesStream {
         Iterator<Map.Entry<Integer, Integer>> it = coleccion.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, Integer> e = it.next();
-
-            //  System.out.println(((char) (int) e.getKey()) + " " + e.getValue());
+            System.out.println(((char) (int) e.getKey()) + " " + e.getValue());
         }
 
     }

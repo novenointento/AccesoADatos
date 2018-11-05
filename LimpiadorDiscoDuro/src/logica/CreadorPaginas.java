@@ -12,22 +12,22 @@ import java.util.Map;
 
 /**
  *
- * @author silvia
+ * @author Daniel Regueiro
  */
-public class ChartsCreator {
+public class CreadorPaginas {
 
     public static enum TIPO_GRAFICO {
         BAR, LINE, RADAR, PIE, DOUGHNUT, POLARAREA
     }
 
-    public static void createChart(String webTitle, String chartTitle, Map<String, Integer> data, TIPO_GRAFICO chartType, File outputFile) throws FileNotFoundException, IOException {
+    public static void crearPagina(String tituloWeb, String tituloGrafico, Map<String, Integer> datos, TIPO_GRAFICO chartType, File archivoSalida) throws FileNotFoundException, IOException {
         String type = (chartType == TIPO_GRAFICO.POLARAREA) ? "polarArea" : chartType.name().toLowerCase();
 
         String cabecera
                 = "<!DOCTYPE html>\n"
                 + "<html>\n"
                 + "    <head>\n"
-                + "        <title>" + webTitle + "</title>\n"
+                + "        <title>" + tituloWeb + "</title>\n"
                 + "        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js\"></script>\n"
                 + "        <meta charset=\"UTF-8\">\n"
                 + "        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
@@ -45,9 +45,9 @@ public class ChartsCreator {
 
         String keys = "";
         int keyCounter = 1;
-        for (String key : data.keySet()) {
+        for (String key : datos.keySet()) {
             keys = keys.concat('"' + key + '"');
-            if (keyCounter < data.size()) {
+            if (keyCounter < datos.size()) {
                 keys = keys.concat(", ");
             }
             keyCounter++;
@@ -55,7 +55,7 @@ public class ChartsCreator {
 
         String body = "],\n"
                 + "                    datasets: [{\n"
-                + "                            label: \"" + chartTitle + "\",\n"
+                + "                            label: \"" + tituloGrafico + "\",\n"
                 + "                            backgroundColor: [\n"
                 + "                                'rgba(255, 99, 132, 0.2)',\n"
                 + "                                'rgba(54, 162, 235, 0.2)',\n"
@@ -76,15 +76,15 @@ public class ChartsCreator {
 
         String valores = "";
         int valueCounter = 1;
-        for (Integer value : data.values()) {
+        for (Integer value : datos.values()) {
             valores = valores.concat(value.toString());
-            if (valueCounter < data.size()) {
+            if (valueCounter < datos.size()) {
                 valores = valores.concat(", ");
             }
             valueCounter++;
         }
 
-        String pie = "]\n"
+        String piePagina = "]\n"
                 + "                        }]\n"
                 + "                },\n"
                 + "                options: {}\n"
@@ -93,10 +93,10 @@ public class ChartsCreator {
                 + "    </body>\n"
                 + "</html>";
 
-        String web = cabecera + keys + body + valores + pie;
-        FicheroDeTexto fichero= new FicheroDeTexto(outputFile);
-        fichero.abrirEscritor(false);
-        fichero.print(web);
+        String web = cabecera + keys + body + valores + piePagina;
+        OperacionesFicheros fichero= new OperacionesFicheros(archivoSalida);
+        fichero.abrirEscritorFlujoDatos(false);
+        fichero.grabarEnDisco(web);
         
     }
      

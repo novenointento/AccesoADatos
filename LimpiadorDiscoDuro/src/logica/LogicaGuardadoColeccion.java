@@ -11,27 +11,23 @@ import java.util.List;
 
 /**
  *
- * @author daniel
+ * @author Daniel Regueiro
+ * 
  */
-public class ControladorLimpiador {
+public class LogicaGuardadoColeccion {
 
     private OperacionesFicheros opFich = new OperacionesFicheros();
     private File archivo;
     private List<File> coleccionArchivos;
-    private static ControladorLimpiador gestor = null;
-
-    private ControladorLimpiador() {
-
-    }
+    private static LogicaGuardadoColeccion gestor = null;
 
     private synchronized static void createInstance() {
         if (gestor == null) {
-            gestor = new ControladorLimpiador(); //crea una instance para llamar solo a un objeto de esta clase desde cualquier jdialog
-
+            gestor = new LogicaGuardadoColeccion(); //crea una instance para llamar solo a un objeto de esta clase desde cualquier jdialog
         }
     }
 
-    public static ControladorLimpiador getInstance() {
+    public static LogicaGuardadoColeccion getInstance() {
         if (gestor == null) {
             createInstance();
         }
@@ -40,12 +36,10 @@ public class ControladorLimpiador {
 
     public void recogerColeccionFiles(File entrada) {
         archivo = entrada;
-
     }
 
     public void reiniciarBusqueda() {
         opFich.limpiarDirectorios();
-
     }
 
     public List<File> devolverColeccionArchivos() {
@@ -56,22 +50,17 @@ public class ControladorLimpiador {
         try {
             List<File> listaOrdenada;
             return listaOrdenada = opFich.listarFicheros(archivos, nombre, directorio);
-        } catch (MisExceptions.RutaNoValida ex) {
+        } catch (MisExceptiones.RutaNoValida ex) {
             System.out.println("Error en el metodo ordenarFiles, clase controlador");
             return null;
         }
-
     }
 
     public List<File> SeleccionarFilesRecursivamente() {
-
         try {
             coleccionArchivos = opFich.listarFicherosRecursivo(archivo);
-
             return coleccionArchivos;
-        } catch (MisExceptions.RutaNoValida ex) {
-            return null;
-        } catch (IOException ex) {
+        } catch (MisExceptiones.RutaNoValida | IOException ex) {
             return null;
         }
 

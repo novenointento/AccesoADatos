@@ -5,13 +5,16 @@
  */
 package logica;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -21,30 +24,43 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Clase para el manejo de directorios
+ * Clase para el manejo de ficheros
  *
  * @author Daniel Regueiro
  */
 public class OperacionesFicheros {
 
+    private File fichero;
+    private PrintWriter escritorEndisco;
+    private BufferedReader br;
     private ArrayList directorios = new ArrayList();
 
+    public OperacionesFicheros(File fichero) {
+        this.fichero = fichero;
+    }
+
+    public OperacionesFicheros() {
+    }
+
     /**
+     * lista los ficheros en una coleccion y los ordena por nombre
      *
-     * @param ruta meto la ruta que quiero filtrar
-     * @param pornombre parametro boolean que hace ordenar por nombre la lista
-     * de files
-     * @param soloDirectorios solo lista los directorios,ignorando los archivos
+     * @param listaFicheros
+     * @param ordenarPornombre parametro boolean que hace ordenar por nombre la
+     * lista de files
+     * @param listarSoloDirectorios solo lista los directorios,ignorando los
+     * archivos
      * @return devuleve la lista ordenada y con o sin archivos
+     * @throws logica.MisExceptions.RutaNoValida
      *
      */
-    public List<File> listarFicheros(List listaFicheros, boolean pornombre, boolean soloDirectorios) throws MisExceptions.RutaNoValida {
+    public List<File> listarFicheros(List listaFicheros, boolean ordenarPornombre, boolean listarSoloDirectorios) throws MisExceptiones.RutaNoValida {
 
-        if (pornombre && !soloDirectorios) {
+        if (ordenarPornombre && !listarSoloDirectorios) {
             listaFicheros = listarFicherosNombre(listaFicheros);
-        } else if (!pornombre && soloDirectorios) {
+        } else if (!ordenarPornombre && listarSoloDirectorios) {
             listaFicheros = listarSoloDirectorios(listarFicherosTamano(listaFicheros));
-        } else if (pornombre && soloDirectorios) {
+        } else if (ordenarPornombre && listarSoloDirectorios) {
             listaFicheros = listarSoloDirectorios(listarFicherosNombre(listaFicheros));
         }
 
@@ -53,6 +69,7 @@ public class OperacionesFicheros {
 
     /**
      *
+     * metodo que devuelve la lista de ficheros ordenados por tamaño
      *
      * @param lista
      * @return devuelve la lista ordenada por tamaño
@@ -84,7 +101,7 @@ public class OperacionesFicheros {
      * @return
      */
     public List<File> listarSoloDirectorios(List<File> lista) {
-        List<File> directorios = new ArrayList<File>();
+        List<File> directorios = new ArrayList<>();
         for (File file : lista) {
             if (file.isDirectory()) {
                 directorios.add(file);
@@ -94,6 +111,7 @@ public class OperacionesFicheros {
     }
 
     /**
+     * metodo que crea los directorios que le pasamos en un file de origen
      *
      * @param rutaOrigen ruta donde queremos crear la lista de directorios
      * @param listaDirectorios list con los directorios a crear
@@ -101,14 +119,11 @@ public class OperacionesFicheros {
      * @throws MisExceptions.RutaYaExiste
      * @throws MisExceptions.RutaNoValida
      */
-    public int crearDirectorios(File rutaOrigen, ArrayList<String> listaDirectorios) throws MisExceptions.RutaYaExiste, MisExceptions.RutaNoValida {
+    public int crearDirectorios(File rutaOrigen, ArrayList<String> listaDirectorios) throws MisExceptiones.RutaYaExiste, MisExceptiones.RutaNoValida {
         int numero = 0;
-
         if (!rutaOrigen.exists()) {
-            throw new MisExceptions.RutaNoValida("ruta no valida");
-
+            throw new MisExceptiones.RutaNoValida("ruta no valida");
         } else {
-
             for (String listaDirectorio : listaDirectorios) {
 
                 File directorio = new File(rutaOrigen.getPath() + listaDirectorio);
@@ -122,39 +137,44 @@ public class OperacionesFicheros {
     }
 
     /**
+     * metodo que cambia la extension de un archivo recibiendo un string con la
+     * ruta
      *
-     * @param ruta String con la ruta donde queremos buscar
-     * @param extensionAntiguac String de la extension antigua
+     * @param ruta String con la ruta donde queremos modificar el archivo
+     * @param extensionAntigua
      * @param extensionNueva String de la extension que queremos
      * @return true si lo cambia, false si no lo hace
      * @throws MisExceptions.RutaNoValida
      */
-    public boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+    public boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptiones.RutaNoValida {
         return cambiarExtensionFichero(new File(ruta), extensionAntigua, extensionNueva);
     }
 
     /**
+     * metodo que cambia la extension de un fichero recibiendo un file
      *
-     * @param ruta File con la ruta donde queremos buscar el archivo a modificar
+     * @param rutaArchivoACambiar File con la ruta donde queremos buscar el
+     * archivo a modificar
      * @param extensionAntigua String con la extension a cambiar
      * @param extensionNueva String con la extension final
      * @return true si ha podido cambiarlo y false si no
      * @throws MisExceptions.RutaNoValida
      */
-    public boolean cambiarExtensionFichero(File ruta, String extensionAntigua, String extensionNueva) throws MisExceptions.RutaNoValida {
+    public boolean cambiarExtensionFichero(File rutaArchivoACambiar, String extensionAntigua, String extensionNueva) throws MisExceptiones.RutaNoValida {
 
-        if (!ruta.exists()) {
-            throw new MisExceptions.RutaNoValida();
+        if (!rutaArchivoACambiar.exists()) {
+            throw new MisExceptiones.RutaNoValida();
         }
-        if (ruta.getName().endsWith(extensionAntigua)) {
-            ruta.getName().replace(extensionAntigua, extensionNueva);
+        if (rutaArchivoACambiar.getName().endsWith(extensionAntigua)) {
+            rutaArchivoACambiar.getName().replace(extensionAntigua, extensionNueva);
             return true;
         }
         return false;
     }
 
     /**
-     *
+     * metodo que crea un array vacio de directorios, usado para limpiar la
+     * tabla
      */
     public void limpiarDirectorios() {
 
@@ -162,8 +182,14 @@ public class OperacionesFicheros {
 
     }
 
-    //ejercicio 2
-    public ArrayList<File> listarFicherosRecursivo(File fichero) throws MisExceptions.RutaNoValida, IOException {
+    /**
+     *
+     * @param fichero
+     * @return
+     * @throws MisExceptions.RutaNoValida
+     * @throws IOException
+     */
+    public ArrayList<File> listarFicherosRecursivo(File fichero) throws MisExceptiones.RutaNoValida, IOException {
 
         for (File ficheroLeido : fichero.listFiles()) {
             if (ficheroLeido.isFile()) {
@@ -177,17 +203,23 @@ public class OperacionesFicheros {
         return directorios;
     }
 
+    /**
+     * metodo que devuelve la fecha de creacion de un archivo
+     *
+     * @param file
+     * @return string con la fecha formateada del archivo introducido
+     */
     public static String fechaCreacionArchivo(File file) {
 
-        BasicFileAttributes attrs;
+        BasicFileAttributes atributosDelFile;
         try {
-            attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            FileTime time = attrs.creationTime();
+            atributosDelFile = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            FileTime fechaDeCreacion = atributosDelFile.creationTime();
 
-            String pattern = "yyyy-MM-dd HH:mm:ss";
-            SimpleDateFormat formateadorFecha = new SimpleDateFormat(pattern);
+            String modeloDeLaFecha = "yyyy-MM-dd HH:mm:ss";
+            SimpleDateFormat formateadorFecha = new SimpleDateFormat(modeloDeLaFecha);
 
-            String fechaFormateada = formateadorFecha.format(new Date(time.toMillis()));
+            String fechaFormateada = formateadorFecha.format(new Date(fechaDeCreacion.toMillis()));
 
             return fechaFormateada;
         } catch (IOException e) {
@@ -197,22 +229,29 @@ public class OperacionesFicheros {
         return "error en la fecha";
 
     }
-    
+
+    /**
+     * copia un archivo de una ruta a otra
+     *
+     * @param rutaOrigen
+     * @param rutaDestino
+     * @return
+     */
     public static boolean copiarArchivo(String rutaOrigen, String rutaDestino) {
         File origen = new File(rutaOrigen);
-        File destination = new File(rutaDestino);
+        File destino = new File(rutaDestino);
         if (origen.exists()) {
             try {
-                InputStream in = new FileInputStream(origen);
-                OutputStream out = new FileOutputStream(destination);
-             
-                byte[] buf = new byte[1024];
+                InputStream lectorEntradaDatos = new FileInputStream(origen);
+                OutputStream escritorSalidaDatos = new FileOutputStream(destino);
+
+                byte[] buffer = new byte[1024];
                 int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
+                while ((len = lectorEntradaDatos.read(buffer)) > 0) {
+                    escritorSalidaDatos.write(buffer, 0, len);
                 }
-                in.close();
-                out.close();
+                lectorEntradaDatos.close();
+                escritorSalidaDatos.close();
                 return true;
             } catch (IOException ioe) {
                 ioe.printStackTrace();
@@ -221,5 +260,30 @@ public class OperacionesFicheros {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Abre el flujo para grabar en el fichero. Si el fichero no existe lo crea,
+     * si no puede devuelve un mensaje,
+     *
+     * @param anadir True para escribir la informacion al final de la existente,
+     * False para sobrescribir.
+     */
+    public void abrirEscritorFlujoDatos(boolean anadir) {
+        try {
+            escritorEndisco = new PrintWriter(new FileWriter(fichero, anadir), true);
+        } catch (FileNotFoundException ex) {
+            System.out.println("No se encuentra el fichero.");
+        } catch (IOException ex) {
+            System.out.println("No se pudo acceder al fichero.");
+        }
+    }
+    /**
+     * Graba como caracteres en el fichero el valor del String introducido.
+     * @param cadena El String que se quiere grabar en el fichero.
+     */
+    public void grabarEnDisco(String cadena) {
+        escritorEndisco.print(cadena);
+        escritorEndisco.flush();
     }
 }

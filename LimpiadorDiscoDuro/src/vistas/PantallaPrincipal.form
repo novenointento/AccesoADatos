@@ -130,7 +130,7 @@
                       <Component id="jCheckBoxDirectorios" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="comboUnidadesCopiaSeguridad" linkSize="2" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
@@ -142,11 +142,10 @@
                               <Component id="jButtonCambiarExtension" linkSize="6" alignment="3" min="-2" pref="52" max="-2" attributes="0"/>
                               <Component id="jButtonEliminar" linkSize="6" alignment="3" min="-2" pref="52" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jButtonSeleccionar" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                  <EmptySpace pref="48" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -159,7 +158,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTable" name="jTable1">
+            <Component class="javax.swing.JTable" name="jTablaPrincipal">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="4" rowCount="4">
@@ -195,7 +194,7 @@
               <Font name="Dialog" size="14" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Cambiar Extensi&#xf3;n"/>
-            <Property name="toolTipText" type="java.lang.String" value="Selecciona un archivo de la lista para eliminarlo"/>
+            <Property name="toolTipText" type="java.lang.String" value="Selecciona un archivo de la lista para cambiar su extension"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonCambiarExtensionActionPerformed"/>
@@ -216,6 +215,7 @@
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="0"/>
             </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Extensi&#xf3;n que recibira el archivo seleccionado"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -246,6 +246,7 @@
                 <StringItem index="3" value="Item 4"/>
               </StringArray>
             </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Unidad donde se realizara la copia"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -359,6 +360,7 @@
                 <StringItem index="3" value="Item 4"/>
               </StringArray>
             </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Selecciona la unidad"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -434,6 +436,7 @@
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="0"/>
             </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Tama&#xf1;o minimo que queremos eliminar"/>
           </Properties>
           <Events>
             <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jComboBTamanoItemStateChanged"/>
@@ -450,6 +453,7 @@
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="0"/>
             </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Extensiones que queremos eliminar"/>
           </Properties>
           <Events>
             <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="comboExtensionesBorrablesItemStateChanged"/>

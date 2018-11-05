@@ -44,14 +44,14 @@ public class TableModelFile extends AbstractTableModel {
         return columnas[i];
     }
 
-    @Override
+    @Override //metodo para rellenar la tabla principal
     public Object getValueAt(int filas, int columnas) {
         switch (columnas) {
 
             case 0:
                 return listaFiles.get(filas).getName();
             case 1:
-                return listaFiles.get(filas).length() + " bytes";
+                return (listaFiles.get(filas).length() / 1024) + " KBytes";
             case 2:
                 return listaFiles.get(filas).getAbsolutePath();
             case 3:
@@ -62,7 +62,7 @@ public class TableModelFile extends AbstractTableModel {
                 }
             case 4:
                 return OperacionesFicheros.fechaCreacionArchivo(listaFiles.get(filas));
-            case 5:
+            case 5: //en el caso 5 calculo segun los parametros del archivo si es borrable o no
                 boolean borrable = false;
                 if (listaFiles.get(filas).isDirectory() && listaFiles.get(filas).list().length == 0) {
                     borrable = true;
@@ -74,7 +74,7 @@ public class TableModelFile extends AbstractTableModel {
                     borrable = true;
                 }
                 if (borrable) {
-                    this.listaFilesBorrables.add(listaFiles.get(filas));
+                    this.listaFilesBorrables.add(listaFiles.get(filas)); //añado a la lista de borrables para eliminar con el boton borrarBorrables
                     return "Si";
                 } else {
                     return "No";
@@ -82,8 +82,13 @@ public class TableModelFile extends AbstractTableModel {
         }
         return null;
     }
-    
-    public List<File> getListaBorrables(){
+
+    /**
+     *
+     * @return lista con todos los archivos que cumplen los criterios para ser
+     * borrados
+     */
+    public List<File> getListaBorrables() {
         return this.listaFilesBorrables;
     }
 
