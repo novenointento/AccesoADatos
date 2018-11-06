@@ -14,7 +14,7 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author daniel regueiro
  */
-public class TableModelFile extends AbstractTableModel {
+public class ModeloTablaParaFiles extends AbstractTableModel {
 
     private long tamanoBorrable;
     private String extensionBorrable;
@@ -22,7 +22,7 @@ public class TableModelFile extends AbstractTableModel {
     private List<File> listaFilesBorrables;
     private final String[] columnas = {"Nombre", "Tamaño", "Ruta", "Contenido", "Antiguedad", "Borrable"};
 
-    public TableModelFile(long tamanoBorrable, String extensionBorrable, List<File> listaFiles) {
+    public ModeloTablaParaFiles(long tamanoBorrable, String extensionBorrable, List<File> listaFiles) {
         this.tamanoBorrable = tamanoBorrable;
         this.extensionBorrable = extensionBorrable;
         this.listaFiles = listaFiles;

@@ -20,12 +20,11 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.TableRowSorter;
-import logica.CreadorPaginas;
+import logica.CreadorPaginasWeb;
 import logica.LogicaGuardadoColeccion;
 import logica.OperacionesFicheros;
 import logica.OperacionesFicherosTexto;
-import logica.TableModelFile;
-import logica.VisualizadorPagina;
+import logica.ModeloTablaParaFiles;
 
 /**
  *
@@ -40,8 +39,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private final FileNameExtensionFilter filtroTemporales = new FileNameExtensionFilter("Archivos temporales", "tmp");
     private File unidadesInstaladas[];
     private File paginaWeb;
-    private VisualizadorPagina visualizador;
-    private TableModelFile tableModel;
+    private ModeloTablaParaFiles tableModel;
     private OperacionesFicherosTexto logicaOperacionesStream = new OperacionesFicherosTexto();
 
     private enum TAMANO {
@@ -545,7 +543,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
             datos.put("Espacio libre", espacioLibreGb);
             datos.put("Espacio ocupado", espacioTotalGb - espacioLibreGb);
             try {
-                CreadorPaginas.crearPagina("Espacio de la unidad", "Espacio", datos, CreadorPaginas.TIPO_GRAFICO.DOUGHNUT, paginaWeb);
+                CreadorPaginasWeb.crearPagina("Espacio de la unidad", "Espacio", datos, CreadorPaginasWeb.TIPO_GRAFICO.DOUGHNUT, paginaWeb);
             } catch (IOException ex) {
                 Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -692,9 +690,9 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void rellenarTablaPrincipal() {
         long tamanoMaximo = TAMANO.valueOf(TAMANO.getEnum(jComboBTamano.getSelectedItem().toString()).toString()).getCantidad();
-        tableModel = new TableModelFile(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), LogicaGuardadoColeccion.getInstance().ordenarFiles(LogicaGuardadoColeccion.getInstance().SeleccionarFilesRecursivamente(), false, jCheckBoxDirectorios.isSelected()));
+        tableModel = new ModeloTablaParaFiles(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), LogicaGuardadoColeccion.getInstance().ordenarFiles(LogicaGuardadoColeccion.getInstance().SeleccionarFilesRecursivamente(), false, jCheckBoxDirectorios.isSelected()));
         jTablaPrincipal.setModel(tableModel);
-        TableRowSorter<TableModelFile> sorter = new TableRowSorter<>(tableModel);
+        TableRowSorter<ModeloTablaParaFiles> sorter = new TableRowSorter<>(tableModel);
         jTablaPrincipal.setRowSorter(sorter);
     }
 

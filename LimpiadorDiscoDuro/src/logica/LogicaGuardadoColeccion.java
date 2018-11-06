@@ -12,7 +12,7 @@ import java.util.List;
 /**
  *
  * @author Daniel Regueiro
- * 
+ *
  */
 public class LogicaGuardadoColeccion {
 
@@ -56,6 +56,12 @@ public class LogicaGuardadoColeccion {
         }
     }
 
+    /**
+     * metodo que llama al listar recursivamente de operaciones con ficheros y
+     * devuelve la lista de archivos con todo el contenido
+     *
+     * @return coleccion de files recursivos
+     */
     public List<File> SeleccionarFilesRecursivamente() {
         try {
             coleccionArchivos = opFich.listarFicherosRecursivo(archivo);

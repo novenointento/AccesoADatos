@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Daniel Regueiro
  */
-public class CreadorPaginas {
+public class CreadorPaginasWeb {
 
     public static enum TIPO_GRAFICO {
         BAR, LINE, RADAR, PIE, DOUGHNUT, POLARAREA

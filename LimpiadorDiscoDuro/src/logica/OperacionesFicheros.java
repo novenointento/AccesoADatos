@@ -5,7 +5,7 @@
  */
 package logica;
 
-import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +32,6 @@ public class OperacionesFicheros {
 
     private File fichero;
     private PrintWriter escritorEndisco;
-    private BufferedReader br;
     private ArrayList directorios = new ArrayList();
 
     public OperacionesFicheros(File fichero) {
@@ -51,11 +50,10 @@ public class OperacionesFicheros {
      * @param listarSoloDirectorios solo lista los directorios,ignorando los
      * archivos
      * @return devuleve la lista ordenada y con o sin archivos
-     * @throws logica.MisExceptions.RutaNoValida
+     * @throws logica.MisExceptiones.RutaNoValida
      *
      */
     public List<File> listarFicheros(List listaFicheros, boolean ordenarPornombre, boolean listarSoloDirectorios) throws MisExceptiones.RutaNoValida {
-
         if (ordenarPornombre && !listarSoloDirectorios) {
             listaFicheros = listarFicherosNombre(listaFicheros);
         } else if (!ordenarPornombre && listarSoloDirectorios) {
@@ -63,7 +61,6 @@ public class OperacionesFicheros {
         } else if (ordenarPornombre && listarSoloDirectorios) {
             listaFicheros = listarSoloDirectorios(listarFicherosNombre(listaFicheros));
         }
-
         return listaFicheros;
     }
 
@@ -101,40 +98,16 @@ public class OperacionesFicheros {
      * @return
      */
     public List<File> listarSoloDirectorios(List<File> lista) {
-        List<File> directorios = new ArrayList<>();
+        List<File> listaDirectorios = new ArrayList<>();
         for (File file : lista) {
             if (file.isDirectory()) {
-                directorios.add(file);
+                listaDirectorios.add(file);
             }
         }
-        return directorios;
+        return listaDirectorios;
     }
 
-    /**
-     * metodo que crea los directorios que le pasamos en un file de origen
-     *
-     * @param rutaOrigen ruta donde queremos crear la lista de directorios
-     * @param listaDirectorios list con los directorios a crear
-     * @return int numero de directorios creados
-     * @throws MisExceptions.RutaYaExiste
-     * @throws MisExceptions.RutaNoValida
-     */
-    public int crearDirectorios(File rutaOrigen, ArrayList<String> listaDirectorios) throws MisExceptiones.RutaYaExiste, MisExceptiones.RutaNoValida {
-        int numero = 0;
-        if (!rutaOrigen.exists()) {
-            throw new MisExceptiones.RutaNoValida("ruta no valida");
-        } else {
-            for (String listaDirectorio : listaDirectorios) {
-
-                File directorio = new File(rutaOrigen.getPath() + listaDirectorio);
-                if (!directorio.exists()) {
-                    directorio.mkdir();
-                    numero = numero + 1;
-                }
-            }
-        }
-        return numero;
-    }
+  
 
     /**
      * metodo que cambia la extension de un archivo recibiendo un string con la
@@ -144,7 +117,7 @@ public class OperacionesFicheros {
      * @param extensionAntigua
      * @param extensionNueva String de la extension que queremos
      * @return true si lo cambia, false si no lo hace
-     * @throws MisExceptions.RutaNoValida
+     * @throws logica.MisExceptiones.RutaNoValida
      */
     public boolean cambiarExtensionFichero(String ruta, String extensionAntigua, String extensionNueva) throws MisExceptiones.RutaNoValida {
         return cambiarExtensionFichero(new File(ruta), extensionAntigua, extensionNueva);
@@ -158,7 +131,7 @@ public class OperacionesFicheros {
      * @param extensionAntigua String con la extension a cambiar
      * @param extensionNueva String con la extension final
      * @return true si ha podido cambiarlo y false si no
-     * @throws MisExceptions.RutaNoValida
+     * @throws MisExceptiones.RutaNoValida
      */
     public boolean cambiarExtensionFichero(File rutaArchivoACambiar, String extensionAntigua, String extensionNueva) throws MisExceptiones.RutaNoValida {
 
@@ -177,20 +150,17 @@ public class OperacionesFicheros {
      * tabla
      */
     public void limpiarDirectorios() {
-
         directorios = new ArrayList();
-
     }
 
     /**
      *
      * @param fichero
      * @return
-     * @throws MisExceptions.RutaNoValida
+     * @throws MisExceptiones.RutaNoValida
      * @throws IOException
      */
     public ArrayList<File> listarFicherosRecursivo(File fichero) throws MisExceptiones.RutaNoValida, IOException {
-
         for (File ficheroLeido : fichero.listFiles()) {
             if (ficheroLeido.isFile()) {
                 directorios.add(ficheroLeido);
@@ -210,24 +180,19 @@ public class OperacionesFicheros {
      * @return string con la fecha formateada del archivo introducido
      */
     public static String fechaCreacionArchivo(File file) {
-
         BasicFileAttributes atributosDelFile;
         try {
             atributosDelFile = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
             FileTime fechaDeCreacion = atributosDelFile.creationTime();
-
             String modeloDeLaFecha = "yyyy-MM-dd HH:mm:ss";
             SimpleDateFormat formateadorFecha = new SimpleDateFormat(modeloDeLaFecha);
-
             String fechaFormateada = formateadorFecha.format(new Date(fechaDeCreacion.toMillis()));
 
             return fechaFormateada;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return "error en la fecha";
-
     }
 
     /**
@@ -244,7 +209,6 @@ public class OperacionesFicheros {
             try {
                 InputStream lectorEntradaDatos = new FileInputStream(origen);
                 OutputStream escritorSalidaDatos = new FileOutputStream(destino);
-
                 byte[] buffer = new byte[1024];
                 int len;
                 while ((len = lectorEntradaDatos.read(buffer)) > 0) {
