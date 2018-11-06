@@ -33,6 +33,8 @@ public class OperacionesFicheros {
     private File fichero;
     private PrintWriter escritorEndisco;
     private ArrayList directorios = new ArrayList();
+    private FileOutputStream escritorFlujoDatos = null;
+    private FileInputStream lectorEntradaDatos = null;
 
     public OperacionesFicheros(File fichero) {
         this.fichero = fichero;
@@ -53,41 +55,11 @@ public class OperacionesFicheros {
      * @throws logica.MisExceptiones.RutaNoValida
      *
      */
-    public List<File> listarFicheros(List listaFicheros, boolean ordenarPornombre, boolean listarSoloDirectorios) throws MisExceptiones.RutaNoValida {
-        if (ordenarPornombre && !listarSoloDirectorios) {
-            listaFicheros = listarFicherosNombre(listaFicheros);
-        } else if (!ordenarPornombre && listarSoloDirectorios) {
-            listaFicheros = listarSoloDirectorios(listarFicherosTamano(listaFicheros));
-        } else if (ordenarPornombre && listarSoloDirectorios) {
-            listaFicheros = listarSoloDirectorios(listarFicherosNombre(listaFicheros));
+    public List<File> listarFicheros(List listaFicheros,  boolean listarSoloDirectorios) throws MisExceptiones.RutaNoValida {
+         if (listarSoloDirectorios) {
+            listaFicheros = listarSoloDirectorios(listaFicheros);
         }
         return listaFicheros;
-    }
-
-    /**
-     *
-     * metodo que devuelve la lista de ficheros ordenados por tamaño
-     *
-     * @param lista
-     * @return devuelve la lista ordenada por tamaño
-     */
-    public List<File> listarFicherosTamano(List<File> lista) {
-        lista.sort((File fichero1, File fichero2) -> fichero1.length() < fichero2.length() ? 1 : -1);
-        return lista;
-    }
-
-    /**
-     * metodo usado internamente por el metodo listarFicheros para ordenar por
-     * nombre
-     *
-     * @param lista
-     * @return una lista ordenada por nombre
-     */
-    public List<File> listarFicherosNombre(List<File> lista) {
-
-        lista.sort((File fichero1, File fichero2) -> fichero1.getName().compareTo(fichero2.getName()));
-
-        return lista;
     }
 
     /**
@@ -249,5 +221,47 @@ public class OperacionesFicheros {
     public void grabarEnDisco(String cadena) {
         escritorEndisco.print(cadena);
         escritorEndisco.flush();
+    }
+
+    /**
+     * codifica un archivo de texto moviento el valor de cada char con un numero
+     * generado por con la palabra que se use como contraseña
+     *
+     * @param archivoCodificar
+     * @param contasenya
+     * @param decodificar
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public void codificadorArchivosTexto(File archivoCodificar, String contasenya, boolean decodificar) throws FileNotFoundException, IOException {
+        String rutaOriginal;
+        rutaOriginal = archivoCodificar.getAbsolutePath();
+        int claveCodificacion = 0;
+        for (int i = 0; i < contasenya.length(); i++) {
+            claveCodificacion = claveCodificacion + contasenya.charAt(i);
+        }
+        if (decodificar) {
+            claveCodificacion = claveCodificacion * -1;
+        }
+        File archivoCodificado = new File(archivoCodificar.getParent() + "/codificado " + archivoCodificar.getName());
+        if (archivoCodificar.exists()) {
+            try {
+                lectorEntradaDatos = new FileInputStream(archivoCodificar);
+                escritorFlujoDatos = new FileOutputStream(archivoCodificado);
+                int c;
+                while ((c = lectorEntradaDatos.read()) != -1) {
+                    escritorFlujoDatos.write(c + claveCodificacion);
+                }
+            } finally {
+                if (lectorEntradaDatos != null) {
+                    lectorEntradaDatos.close();
+                }
+                if (escritorFlujoDatos != null) {
+                    escritorFlujoDatos.close();
+                }
+            }
+        }
+        archivoCodificar.delete();
+        archivoCodificado.renameTo(new File(rutaOriginal));
     }
 }

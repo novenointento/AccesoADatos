@@ -23,7 +23,6 @@ import javax.swing.table.TableRowSorter;
 import logica.CreadorPaginasWeb;
 import logica.LogicaGuardadoColeccion;
 import logica.OperacionesFicheros;
-import logica.OperacionesFicherosTexto;
 import logica.ModeloTablaParaFiles;
 
 /**
@@ -40,7 +39,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
     private File unidadesInstaladas[];
     private File paginaWeb;
     private ModeloTablaParaFiles tableModel;
-    private OperacionesFicherosTexto logicaOperacionesStream = new OperacionesFicherosTexto();
+    private OperacionesFicheros logicaOperacionesStream = new OperacionesFicheros();
 
     private enum TAMANO {
         BYTE("60 Bytes", 60), MEGAS("500 Megas", 5 * 1024 * 1024 * 1024), GIGAS("5 Gigas", 5 * 1024 * 1024 * 1024 * 1024);
@@ -690,7 +689,7 @@ public class PantallaPrincipal extends javax.swing.JFrame {
      */
     public void rellenarTablaPrincipal() {
         long tamanoMaximo = TAMANO.valueOf(TAMANO.getEnum(jComboBTamano.getSelectedItem().toString()).toString()).getCantidad();
-        tableModel = new ModeloTablaParaFiles(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), LogicaGuardadoColeccion.getInstance().ordenarFiles(LogicaGuardadoColeccion.getInstance().SeleccionarFilesRecursivamente(), false, jCheckBoxDirectorios.isSelected()));
+        tableModel = new ModeloTablaParaFiles(tamanoMaximo, "" + comboExtensionesBorrables.getSelectedItem(), LogicaGuardadoColeccion.getInstance().ordenarFiles(LogicaGuardadoColeccion.getInstance().SeleccionarFilesRecursivamente(), jCheckBoxDirectorios.isSelected()));
         jTablaPrincipal.setModel(tableModel);
         TableRowSorter<ModeloTablaParaFiles> sorter = new TableRowSorter<>(tableModel);
         jTablaPrincipal.setRowSorter(sorter);

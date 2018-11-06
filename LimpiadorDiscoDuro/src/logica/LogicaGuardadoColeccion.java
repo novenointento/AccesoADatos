@@ -46,10 +46,10 @@ public class LogicaGuardadoColeccion {
         return coleccionArchivos;
     }
 
-    public List<File> ordenarFiles(List archivos, boolean nombre, boolean directorio) {
+    public List<File> ordenarFiles(List archivos, boolean directorio) {
         try {
             List<File> listaOrdenada;
-            return listaOrdenada = opFich.listarFicheros(archivos, nombre, directorio);
+            return listaOrdenada = opFich.listarFicheros(archivos, directorio);
         } catch (MisExceptiones.RutaNoValida ex) {
             System.out.println("Error en el metodo ordenarFiles, clase controlador");
             return null;
